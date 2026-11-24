@@ -138,8 +138,16 @@ python "$env:USERPROFILE\.dsh\skills\recall\scripts\download_bge_m3.py"
 ## 五、给新环境的自检
 
 ```powershell
-# 技能数对不对（本库直接收录应为 20 + 外部 2 = 22 条软链（mattpocock 是子目录批，不单列））
+# 技能数对不对。每一类按上面的流程软链完之后，实测数量是：
+#   globalSkills 本库直接收录  17（community-skills 逐条）+ 4（顶层 media-downloader / product-manual / lead-learn / codebase-walkthrough）
+#   globalSkills 外部仓库      mattpocock-skills 38（逐条软链，不是整目录）+ MidNight 1 + git-native-sop 1
+#   TeacherPipeLine           10（独立库，不在本仓）
+# 合计 69，其中指向本仓的 59。
 (Get-ChildItem "$env:USERPROFILE\.dsh\skills" -Directory | Where-Object LinkType).Count
+
+# 只看本仓的
+(Get-ChildItem "$env:USERPROFILE\.dsh\skills" -Directory |
+    Where-Object { $_.LinkType -and $_.Target -like '*globalSkills-library*' }).Count
 
 # recall 能不能跑（模型在不在）
 python "$env:USERPROFILE\.dsh\skills\recall\scripts\boot.py" --identity default

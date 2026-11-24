@@ -7,7 +7,7 @@
 
 ---
 
-## 一、本库直接收录（18 个）
+## 一、本库直接收录（19 个）
 
 clone 本仓即得，无需额外操作。
 
@@ -49,36 +49,26 @@ clone 本仓即得，无需额外操作。
 | `bettafish-opinion-analysis` | `community-skills/bettafish-opinion-analysis` | 多智能体舆情分析（三引擎并行 + 协作讨论 → Word 报告） |
 | `iga-pages` | `community-skills/iga-pages` | 前端/全栈项目部署到 IGA Pages |
 
+### 学习 / 记忆链路
+
+| 技能 | 路径 | 干什么 |
+|---|---|---|
+| `lead-learn` | `lead-learn` | 收藏夹 → 各角色长期内容：增量抓取 → 字幕/转录/抽帧 → 判给谁 → 派单。**派单落在工作区，不绑定记忆系统** |
+
 ---
 
-## 二、外部仓库（4 个，各有自己的远端）
+## 二、外部仓库（3 个，各有自己的远端）
 
 **本库不收录它们的文件。** 新环境里要单独 clone，然后软链进技能目录。
 
 | 技能 | 远端 | 说明 |
 |---|---|---|
-| `lead-learn` | `https://github.com/woodmeone/global-skillslibrary`（本仓）→ 见下 | 收藏夹 → 各角色长期内容。**注：本仓已单独收录在仓库内的 lead-learn 之外**，见下方说明 |
 | `MidNight`（含 `recall`） | `https://github.com/woodmeone/MidNight.git` | 长期记忆：自动写日记 + 联想召回。**含 2161 MB 的 bge-m3 模型权重，不在 git 里** |
 | `git-native-sop` | `https://github.com/woodmeone/git-native-sop` | Git 原生 AI 开发方法论（Issue / commit / PR / 真相文档五层） |
 | `mattpocock-skills` | `https://github.com/mattpocock/skills` | 上游第三方技能包（engineering / productivity / misc 等约 40 个） |
 
-### 关于 `lead-learn` 的特殊说明
-
-`lead-learn` 目前**既在本仓的收录范围外、又确实需要跟着本仓走**。原因是它自带 `.git`
-（为了自优化能回滚，见 `docs/adr/0002`）。
-
-两种接法任选：
-
-```powershell
-# 接法 A：单独 clone（推荐，保留它的提交历史与自优化回滚能力）
-git clone https://github.com/woodmeone/global-skillslibrary.git D:\path\to\lead-learn-src
-# 目前它还没有独立远端时，从本仓单独建一个仓库再推，或直接用下面的软链指回本机现存目录
-
-# 接法 B：直接用裸拷贝（放弃 git 回滚能力，不推荐）
-```
-
-**待办**：`lead-learn` 应当有自己的远端仓库（如 `woodmeone/lead-learn`），
-和 MidNight 一样独立管理。本仓只登记来源，不重复收录。
+> `lead-learn` 原来也在这个名单里（自带 `.git` 以便自优化回滚）。
+> 2026-11-24 起它并入本库直接收录——它没有独立远端，且与全局库同生命周期。
 
 ---
 
@@ -100,14 +90,13 @@ GitHub 单文件硬限制 100 MB，免费 LFS 配额 1 GB，装不下。**一律
 git clone https://github.com/woodmeone/global-skillslibrary.git D:\Project\globalSkills-library
 ```
 
-### 2. clone 那 4 个外部仓库到同目录
+### 2. clone 那 3 个外部仓库到同目录
 
 ```powershell
 cd D:\Project\globalSkills-library
 git clone https://github.com/woodmeone/MidNight.git
 git clone https://github.com/woodmeone/git-native-sop.git
 git clone https://github.com/mattpocock/skills.git mattpocock-skills
-# lead-learn 待建独立远端后同样 clone
 ```
 
 ### 3. 把它们软链进技能目录
@@ -121,6 +110,7 @@ $LIB = "D:\Project\globalSkills-library"
 # 本库直接收录的
 New-Item -ItemType Junction -Path "$SK\media-downloader"  -Target "$LIB\media-downloader"
 New-Item -ItemType Junction -Path "$SK\product-manual"    -Target "$LIB\product-manual"
+New-Item -ItemType Junction -Path "$SK\lead-learn"        -Target "$LIB\lead-learn"
 Get-ChildItem "$LIB\community-skills" -Directory | ForEach-Object {
     New-Item -ItemType Junction -Path "$SK\$($_.Name)" -Target $_.FullName
 }
@@ -128,7 +118,6 @@ Get-ChildItem "$LIB\community-skills" -Directory | ForEach-Object {
 # 外部仓库的
 New-Item -ItemType Junction -Path "$SK\recall"         -Target "$LIB\MidNight\skills\recall"
 New-Item -ItemType Junction -Path "$SK\git-native-sop" -Target "$LIB\git-native-sop"
-New-Item -ItemType Junction -Path "$SK\lead-learn"     -Target "$LIB\lead-learn"
 ```
 
 ### 4. 补模型权重
@@ -142,7 +131,7 @@ python "$env:USERPROFILE\.dsh\skills\recall\scripts\download_bge_m3.py"
 ## 五、给新环境的自检
 
 ```powershell
-# 技能数对不对（本库直接收录应为 18 + 外部 4 = 22 条软链）
+# 技能数对不对（本库直接收录应为 19 + 外部 2 = 21 条软链（mattpocock 是子目录批，不单列））
 (Get-ChildItem "$env:USERPROFILE\.dsh\skills" -Directory | Where-Object LinkType).Count
 
 # recall 能不能跑（模型在不在）
@@ -166,6 +155,6 @@ python "$env:USERPROFILE\.dsh\skills\lead-learn\scripts\dispatch.py" status
 ## 七、时间戳
 
 - 建立：2026-11-24
-- 本库收录：18 个技能
-- 外部仓库：4 个（MidNight / git-native-sop / mattpocock-skills / lead-learn）
+- 本库收录：19 个技能
+- 外部仓库：3 个（MidNight / git-native-sop / mattpocock-skills）
 - 排除：模型权重 2161 MB、`node_modules`、`.venv`、`_backup`

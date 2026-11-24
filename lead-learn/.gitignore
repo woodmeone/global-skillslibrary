@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# 运行产物（不属于 skill 本体）
+dispatch/
+lead-learn-data/
+*.log
+
+# ⚠ 下载产物目录：media-downloader 的 workspace 取 Path.cwd()，
+# 从 skill 目录启动就会在这里拉出一个 media-downloads/。
+# 2026-11-24 夜间任务就这样把 24 个文件提交进了仓库。
+# 这是【第二真相源】，必须挡住（git-native-sop 不变量 1）。
+media-downloads/
+.favorites-out/
+
+# 本地草稿
+.scratch/
+*.local.md
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# 敏感：cookie 与凭据一律不进库
+*cookies*.txt
+*cookies*.json
+cookiecloud.json
+.env
+.env.*

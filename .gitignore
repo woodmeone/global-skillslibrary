@@ -10,14 +10,22 @@ __pycache__/
 .ruff_cache/
 *.egg-info/
 
-# ---- 嵌套 git 仓库：各自有远端，本库不收录 ----
-# 它们的真实来源见 SKILLS.md 的「来源」列。
+# ---- 嵌套 git 仓库：各有远端，本库不收录 ----
+# 它们的真实来源见 SKILLS.md 的「外部仓库」一节。
 # 写成 /X/ 是只匹配根级目录，不会误伤子目录里的同名目录。
 /MidNight/
 /git-native-sop/
 /mattpocock-skills/
-/lead-learn/
 /_backup/
+
+# lead-learn 曾是嵌套仓库，2026-11-24 起并入本库直接收录（它没有独立远端）。
+# 它原来的 .git 已移出到 _gitmeta/，回滚能力改由本库提供（见 lead-learn/docs/自优化流程.md）。
+/lead-learn/__pycache__/
+/lead-learn/scripts/__pycache__/
+/lead-learn/.pytest_cache/
+
+# 归档的旧仓库元数据，不进版本控制
+/_gitmeta/
 
 # ---- 大文件：模型权重不进库 ----
 # bge-m3 是 2161 MB，超 GitHub 单文件 100 MB 硬限制。

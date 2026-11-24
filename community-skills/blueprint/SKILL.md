@@ -1,5 +1,5 @@
 ---
-name: codebase-blueprint
+name: blueprint
 description: Draw a layered, clickable flow diagram as one self-contained HTML file — boxes that open into other diagrams, arrows that carry labels, zoom, search, light/dark. Takes a model of nodes and edges and renders it; knows nothing about code, so it draws business processes (报销审批 / 下单履约 / 客服工单), data pipelines (ETL), decision trees, state machines, org and system architecture, and code structure equally well. Use when the user wants to 画图 / 画流程图 / 画链路图 / 画架构图 / 画业务流程图 / 画状态机 / 画决策树 / draw a flow diagram / architecture diagram / process map, wants a diagram they can click into, or wants a diagram that explains itself without a wall of prose. For a diagram wrapped in a written walkthrough with scenario cases, use codebase-walkthrough instead — this skill is only the picture.
 ---
 

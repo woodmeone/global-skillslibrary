@@ -32,5 +32,8 @@ media-downloads/
 *cookies*.txt
 *cookies*.json
 cookiecloud.json
+# 改凭据前 cc_config.set_credentials() 会自动留备份——备份同样含明文，一并挡
+cookiecloud.bak-*.json
+cookiecloud*.bak*
 .env
 .env.*

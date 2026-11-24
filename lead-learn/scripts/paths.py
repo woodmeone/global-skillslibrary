@@ -87,6 +87,12 @@ DY_COOKIES_TXT = OUT / "douyin-cookies.txt"
 DY_COOKIES_JSON = OUT / "douyin-cookies.json"
 CC_CONF = OUT / "cookiecloud.json"
 
+# ---- CookieCloud 用哪份账号 ----
+# 多份 profile（一个浏览器一个账号）时，lead-learn 用哪一份。
+# 留空 = 由 cc_config 按 cookiecloud.json 里的 preferred:true 决定。
+CC_PROFILE = (os.environ.get("LEAD_LEARN_CC_PROFILE", "").strip()
+              or str(_CFG.get("cc_profile") or "").strip())
+
 # ---- 收藏数据 ----
 BILI_FAV = OUT / "bilibili-latest40.json"
 DY_FAV = OUT / "douyin-favorites.json"
@@ -125,8 +131,22 @@ CHROMIUM = Path(
 )
 
 # B站 UID。**必须自己填**，不设默认值——写死谁的 UID 都等于替别人抓收藏夹。
-# 三种给法（优先级同上）：环境变量 BILI_UID > ~/.lead-learn/config.json 的 bili_uid > 空
-BILI_UID = os.environ.get("BILI_UID", "").strip() or str(_CFG.get("bili_uid") or "").strip()
+#
+# 四级：环境变量 BILI_UID > 按 profile 绑定的 uid > 通用 bili_uid > 空
+#
+# ⚠ **为什么要有「按 profile 绑定」这一层**（2026-11-24 踩出来的）：
+#   一份 cookie = 一个登录账号。cookie 换了账号而 UID 没换，抓的就是
+#   **别人的收藏夹**——而且完全不报错，只是内容悄悄变了。实测 Chrome 那份
+#   cookie 对应的 UID 是 B 账号的，而配置里还写着 A 账号的，两边对不上。
+#
+#   所以 cc_profile 指哪份账号，UID 就必须跟着指哪个。想彻底避免这种错配，
+#   就永远别让这两个值分开配：config.json 里用 bili_uid_by_profile 成对维护。
+_env_uid = os.environ.get("BILI_UID", "").strip()
+_uid_map = _CFG.get("bili_uid_by_profile") or {}
+_bound_uid = ""
+if CC_PROFILE and isinstance(_uid_map, dict):
+    _bound_uid = str(_uid_map.get(CC_PROFILE) or "").strip()
+BILI_UID = _env_uid or _bound_uid or str(_CFG.get("bili_uid") or "").strip()
 
 # 每平台每次抓多少条收藏。**唯一出处**，bili_grab3.py 与 favorites.py 都读它。
 #

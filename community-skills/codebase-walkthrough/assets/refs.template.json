@@ -1,0 +1,15 @@
+{
+  "_comment": "One entry per node id. Each ref is path@line@token. The token is an exact substring of that line and must be distinctive. Get line numbers with grep -n; never guess.",
+  "n1": {
+    "span": 12,
+    "refs": {
+      "<label shown in the UI>": "<repo/relative/path.py>@<line>@<exact substring of that line>"
+    }
+  },
+  "n2": {
+    "span": 12,
+    "refs": {
+      "<label>": "<path>@<line>@<token>"
+    }
+  }
+}

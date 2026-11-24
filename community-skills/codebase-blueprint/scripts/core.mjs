@@ -86,7 +86,7 @@ export function validate(spec) {
 export function normalise(spec) {
   const diagrams = spec.diagrams || {}
   const root = spec.root || Object.keys(diagrams)[0]
-  const title = spec.title || 'Walkthrough'
+  const title = spec.title || 'diagram'
 
   const data = {
     tag: title,

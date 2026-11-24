@@ -91,17 +91,49 @@ const HERE = path.dirname(fileURLToPath(import.meta.url))
  *  this file runs, so a missing sibling would surface as
  *  ERR_MODULE_NOT_FOUND with a stack trace — an error about module resolution
  *  when the real problem is "you installed one of the two skills". Check
- *  first, then import. */
-const CORE = path.resolve(HERE, '..', '..', 'blueprint', 'scripts', 'core.mjs')
-if (!fs.existsSync(CORE)) {
-  console.error('codebase-walkthrough 需要 blueprint 同时安装。')
-  console.error(`  找不到：${CORE}`)
+ *  first, then import.
+ *
+ *  ── Why the check looks for two things, not one ──────────────────────────
+ *
+ *  Node resolves a junction to its real path, so `import.meta.url` here is
+ *  ALWAYS the D:\... path in this repo, never C:\...\skills\codebase-walkthrough.
+ *  That means `../../blueprint` from the repo always exists — walking the
+ *  sibling directory proves nothing about whether the *skill* is installed.
+ *  (Verified: deleting the C: junction and re-running still worked.)
+ *
+ *  So the check covers the two ways this actually breaks:
+ *
+ *   1. Sibling gone — someone vendored/copied this skill alone.
+ *   2. Sibling present but its engine is incomplete — a partial copy, or a
+ *      checkout where flow/ never landed. `core.mjs` alone is not enough:
+ *      it reads renderer.js and blueprint.css at render time, and a page
+ *      built without them is blank rather than broken-looking.
+ */
+const BLUEPRINT = path.resolve(HERE, '..', '..', 'blueprint')
+const CORE = path.join(BLUEPRINT, 'scripts', 'core.mjs')
+const ENGINE = [
+  path.join(BLUEPRINT, 'scripts', 'flow', 'renderer.js'),
+  path.join(BLUEPRINT, 'scripts', 'flow', 'blueprint.css'),
+]
+
+const missing = [CORE, ...ENGINE].filter((p) => !fs.existsSync(p))
+if (missing.length) {
+  const there = fs.existsSync(BLUEPRINT)
+  console.error('codebase-walkthrough 需要 blueprint 同时安装（且完整）。')
   console.error('')
-  console.error('  两者在本仓是兄弟目录，按 SKILLS.md「新环境接入」一起软链：')
-  console.error('    $LIB = "D:\\Project\\globalSkills-library"')
-  console.error('    $SK  = "$env:USERPROFILE\\.dsh\\skills"')
-  console.error('    New-Item -ItemType Junction -Path "$SK\\blueprint" `')
-  console.error('      -Target "$LIB\\community-skills\\blueprint"')
+  for (const p of missing) console.error(`  缺：${p}`)
+  console.error('')
+  if (there) {
+    console.error('  blueprint 目录在，但画图引擎不完整 —— 大概率是部分复制或')
+    console.error('  git 没拉全。重新 clone 本仓，或从本仓补齐 scripts/flow/。')
+  } else {
+    console.error('  blueprint 技能不存在。两者在本仓是兄弟目录，按 SKILLS.md')
+    console.error('  「新环境接入」一起软链：')
+    console.error('    $LIB = "D:\\Project\\globalSkills-library"')
+    console.error('    $SK  = "$env:USERPROFILE\\.dsh\\skills"')
+    console.error('    New-Item -ItemType Junction -Path "$SK\\blueprint" `')
+    console.error('      -Target "$LIB\\community-skills\\blueprint"')
+  }
   console.error('')
   console.error('  codebase-walkthrough 不持有画图引擎，它调用 blueprint 的 core.mjs。')
   process.exit(1)

@@ -80,9 +80,41 @@
  */
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const HERE = path.dirname(fileURLToPath(import.meta.url))
+
+/** The drawing skill this one is built on.
+ *
+ *  Loaded with a dynamic import ON PURPOSE. A static `import ... from
+ *  '../../codebase-blueprint/...'` is resolved by the ESM loader before any of
+ *  this file runs, so a missing sibling would surface as
+ *  ERR_MODULE_NOT_FOUND with a stack trace — an error about module resolution
+ *  when the real problem is "you installed one of the two skills". Check
+ *  first, then import. */
+const CORE = path.resolve(HERE, '..', '..', 'codebase-blueprint', 'scripts', 'core.mjs')
+if (!fs.existsSync(CORE)) {
+  console.error('codebase-walkthrough 需要 codebase-blueprint 同时安装。')
+  console.error(`  找不到：${CORE}`)
+  console.error('')
+  console.error('  两者在本仓是兄弟目录，按 SKILLS.md「新环境接入」一起软链：')
+  console.error('    $LIB = "D:\\Project\\globalSkills-library"')
+  console.error('    $SK  = "$env:USERPROFILE\\.dsh\\skills"')
+  console.error('    New-Item -ItemType Junction -Path "$SK\\codebase-blueprint" `')
+  console.error('      -Target "$LIB\\community-skills\\codebase-blueprint"')
+  console.error('')
+  console.error('  codebase-walkthrough 不持有画图引擎，它调用 blueprint 的 core.mjs。')
+  process.exit(1)
+}
+
+const {
+  validate: coreValidate,
+  normalise: coreNormalise,
+  renderDiagramPage,
+  flowAssets,
+  esc,
+  LOCK_TITLE_JS,
+} = await import(pathToFileURL(CORE).href)
 
 function arg(name, fallback) {
   const i = process.argv.indexOf('--' + name)
@@ -134,36 +166,22 @@ for (const s of SCENARIOS) {
 const STORY = SCENARIOS.flatMap(s => s.beats)
 
 // ── 1. validate the model ──────────────────────────────────────────────
-const problems = []
-const allNodeIds = new Set()
+// Structure is the drawing skill's job: it owns what a node and an edge are,
+// so it owns whether they point at anything. This file adds only the checks
+// that need to know about stories and sections.
+const { problems, nodeIds: allNodeIds, edges: allEdges } = coreValidate(spec)
 
 if (!diagrams[ROOT]) {
   console.error(`root diagram "${ROOT}" not found; have: ${Object.keys(diagrams).join(', ') || '(none)'}`)
   process.exit(1)
 }
 
-for (const [id, d] of Object.entries(diagrams)) {
-  const ids = new Set((d.nodes || []).map(n => n.id))
-  for (const nid of ids) allNodeIds.add(nid)
-  for (const n of d.nodes || []) {
-    if (n.drill && !diagrams[n.drill]) {
-      problems.push(`${id}: node "${n.id}" drills into "${n.drill}", which does not exist`)
-    }
-  }
-  for (const e of d.edges || []) {
-    if (!ids.has(e.from)) problems.push(`${id}: edge from "${e.from}" — no such node`)
-    if (!ids.has(e.to)) problems.push(`${id}: edge to "${e.to}" — no such node`)
-  }
-}
 for (const key of Object.keys(SECTIONS)) {
   if (!allNodeIds.has(key)) problems.push(`sections: "${key}" is not a node in any diagram`)
 }
 
 // Every edge, addressable as "from->to".
-const edgeKeys = new Set()
-for (const d of Object.values(diagrams)) {
-  for (const e of d.edges || []) edgeKeys.add(`${e.from}->${e.to}`)
-}
+const edgeKeys = new Set(allEdges.map((x) => x.key))
 
 for (const [si, s] of SCENARIOS.entries()) {
   const where = s.name || s.id || `scenario ${si + 1}`
@@ -199,76 +217,13 @@ for (const s of SCENARIOS) {
     if (b.node) walkedNodes.add(b.node)
   }
 }
-const allEdges = []
-for (const [did, d] of Object.entries(diagrams)) {
-  for (const e of d.edges || []) allEdges.push({ diagram: did, key: `${e.from}->${e.to}`, e })
-}
 const missedEdges = allEdges.filter(x => !walkedEdges.has(x.key))
 
 // ── 2. normalise for renderer.js ───────────────────────────────────────
-const data = {
-  tag: TITLE,
-  root: ROOT,
-  root_dir: '',
-  code: {},
-  diagrams: {},
-}
-
-for (const [id, d] of Object.entries(diagrams)) {
-  const nodes = (d.nodes || []).map(n => {
-    const out = {
-      id: n.id, x: n.x, y: n.y, w: n.w, h: n.h,
-      title: n.title, lines: n.lines || [],
-    }
-    if (n.tag) out.tag = n.tag
-    if (n.mono) out.mono = true
-    if (n.monoLines) out.monoLines = true
-    if (n.tip) out.tip = n.tip
-    if (n.style) out.style = n.style
-    if (n.drill) out.drill = n.drill
-    if (n.ref) out.ref = n.ref
-    if (n.code && typeof n.code === 'object') {
-      const key = `code:${id}:${n.id}`
-      data.code[key] = n.code
-      out.code = key
-      if (n.focus) out.focus = n.focus
-    }
-    return out
-  })
-
-  const edges = (d.edges || []).map(e => {
-    const out = { from: e.from, to: e.to }
-    for (const k of ['fs', 'ts', 'fa', 'ta', 'via', 'label', 'lx', 'ly', 'lt', 'lp', 'lanchor', 'tip', 'key']) {
-      if (e[k] !== undefined) out[k] = e[k]
-    }
-    if (e.dashed) out.dashed = true
-    if (e.both) out.both = true
-    if (e.none) out.none = true
-    if (Array.isArray(e.refs) && e.refs.length) out.refs = e.refs
-    return out
-  })
-
-  data.diagrams[id] = {
-    id, kind: 'diagram',
-    title: d.title || id,
-    crumb: d.crumb || d.title || id,
-    sub: d.sub || '',
-    w: d.w || 1400,
-    h: d.h || 800,
-    groups: d.groups || [],
-    bounds: d.bounds || [],
-    notes: d.notes || [],
-    documentation: d.documentation || [],
-    nodes, edges,
-    parent: d.parent,
-  }
-}
+// The renderer's input shape belongs to the drawing skill. Ask it.
+const data = coreNormalise(spec)
 
 // ── 3. build the explanation layer ─────────────────────────────────────
-const esc = s => String(s ?? '')
-  .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-  .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
-
 function renderRefs(refs) {
   if (!Array.isArray(refs) || !refs.length) return ''
   return refs.map(r => {
@@ -387,8 +342,7 @@ ${scenarioHtml}
 }
 
 // ── 4. page shell ──────────────────────────────────────────────────────
-const css = fs.readFileSync(path.join(HERE, 'flow', 'blueprint.css'), 'utf8')
-const js = fs.readFileSync(path.join(HERE, 'flow', 'renderer.js'), 'utf8')
+const { css, js } = flowAssets()
 
 const extraCss = `
 /* ══ walkthrough layout ══════════════════════════════════════════════ */
@@ -539,19 +493,8 @@ details.ref[open] summary{border-bottom:1px solid var(--line);background:#fff}
 }
 `
 
-// blueprint" on every navigation, which leaks the library's name into the
-// reader's browser tab and makes both pages look identically titled. Pin the
-// title to what this page declared.
-const lockTitle = `
-(function () {
-  var want = document.title;
-  var el = document.querySelector('title');
-  if (!el) return;
-  new MutationObserver(function () {
-    if (document.title !== want) document.title = want;
-  }).observe(el, { childList: true, characterData: true, subtree: true });
-})();
-`
+// The title-lock script and the "which diagram" wording both belong to the
+// drawing skill now — it renders the standalone page. Nothing to duplicate here.
 
 const html = `<!doctype html>
 <html lang="zh-CN">
@@ -617,7 +560,7 @@ const html = `<!doctype html>
 </div>
 
 <script>window.BLUEPRINT = ${JSON.stringify(data).replace(/</g, '\\u003c')};</script>
-<script>${lockTitle}</script>
+<script>${LOCK_TITLE_JS}</script>
 <script>${js}</script>
 <script>
 // Bridge the diagram into the document.
@@ -683,44 +626,15 @@ const html = `<!doctype html>
 `
 
 // ── 5. the diagram on its own ──────────────────────────────────────────
-// The vendored stylesheet is a full-viewport app shell: fixed #bar, fixed
-// #stage, html/body locked to 100%. That is exactly right here and exactly
-// wrong in the document above, which is why the same CSS is used unmodified.
-// This page is the diagram with nothing around it — the shape you want when
-// you are navigating the system rather than reading about it.
-const diagramHtml = `<!doctype html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${esc(TITLE)} · 链路图</title>
-<style>${css}</style>
-</head>
-<body data-theme="light">
-<header id="bar">
-  <div class="brand">${esc(TITLE)}</div>
-  <div id="crumbs"></div>
-  <div class="search"><input id="q" type="search" placeholder="找方框…  ( / )" autocomplete="off" spellcheck="false"><div id="results" hidden></div></div>
-  <nav>
-    <a href="${esc(walkName)}" title="图 + 用户故事 + 节点讲解">图文讲解</a>
-    <button id="up" title="上一层 (Esc)">上一层</button>
-    <button id="fit" title="适应 (0)">适应</button>
-    <button id="theme" title="明暗 (T)">主题</button>
-  </nav>
-</header>
-<main id="stage">
-  <div id="head"><div id="dtitle"></div><div id="dsub"></div><div id="documentation"></div></div>
-  <svg id="canvas" preserveAspectRatio="xMidYMid meet" role="img" aria-label="diagram"></svg>
-  <div id="tip" hidden></div>
-  <aside id="code" hidden></aside>
-  <div id="help">⧉ 打开内部图 · &lt;/&gt; 看代码 · Esc 返回 · 滚轮缩放，拖动平移</div>
-</main>
-<script>window.BLUEPRINT = ${JSON.stringify(data).replace(/</g, '\\u003c')};</script>
-<script>${lockTitle}</script>
-<script>${js}</script>
-</body>
-</html>
-`
+// Delegated: the standalone page belongs to the drawing skill. Only the link
+// back to this document is new, so it is passed in as the extra nav item.
+const diagramHtml = renderDiagramPage({
+  data,
+  title: `${TITLE} · 链路图`,
+  brand: TITLE,
+  nav: `<a href="${esc(walkName)}" title="图 + 用户故事 + 节点讲解">图文讲解</a>`,
+  assets: { css, js },
+})
 
 fs.writeFileSync(OUT, html, 'utf8')
 if (WANT_DIAGRAM) fs.writeFileSync(OUT_DIAGRAM, diagramHtml, 'utf8')

@@ -1,0 +1,1 @@
+﻿.slide::after { content: ''; position: absolute; bottom: 0; left: 80px; right: 80px; height: 1px; background: linear-gradient(90deg, transparent, rgba(189,147,249,.3), transparent); pointer-events: none; }

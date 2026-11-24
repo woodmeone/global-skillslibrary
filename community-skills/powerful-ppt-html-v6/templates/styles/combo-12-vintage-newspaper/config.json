@@ -1,0 +1,58 @@
+{
+  "id": "combo-12",
+  "name": "Vintage Newspaper",
+  "name_cn": "旧报纸复古风",
+  "version": "1.0.0",
+  "best_for": [
+    "Editorial content",
+    "History & Culture",
+    "Literary analysis",
+    "Journalism",
+    "Retro branding"
+  ],
+  "theme": "light",
+  "pptx_bg": "ddd5c0",
+  "chart_support": "svg+echarts",
+  "micro_interactions": [
+    "ink-reveal",
+    "column-sweep",
+    "typestamp-appear"
+  ],
+  "css_variables": {
+    "--bg-primary": "#ddd5c0",
+    "--bg-secondary": "#c8bfa0",
+    "--bg-card": "#e8e0cc",
+    "--bg-aged": "#d0c8b0",
+    "--color-ink": "#1e1a16",
+    "--color-ink-light": "#3a342c",
+    "--color-burgundy": "#7a2828",
+    "--color-rust": "#9a4a32",
+    "--color-olive": "#6a6a4a",
+    "--color-sage": "#8a8a68",
+    "--color-rule": "#a09880",
+    "--color-rule-light": "#b8b098",
+    "--text-primary": "#1e1a16",
+    "--text-secondary": "#5a5248",
+    "--text-tertiary": "#8a7e70",
+    "--text-accent": "#7a2828",
+    "--radius": "0px",
+    "--radius-sm": "0px",
+    "--radius-lg": "2px",
+    "--chart-color-1": "#7a2828",
+    "--chart-color-2": "#6a6a4a",
+    "--chart-color-3": "#9a4a32",
+    "--chart-color-4": "#8a8a68",
+    "--chart-color-5": "#a09880",
+    "--chart-color-6": "#5a5248",
+    "--chart-text": "#1e1a16",
+    "--chart-text-secondary": "#5a5248",
+    "--chart-grid": "#b8b098",
+    "--chart-bg": "transparent"
+  },
+  "includes": [
+    "base.css",
+    "effects.css",
+    "components.css"
+  ],
+  "quality_score": 100.0
+}

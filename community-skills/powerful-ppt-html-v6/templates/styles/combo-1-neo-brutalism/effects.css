@@ -1,0 +1,24 @@
+.slide::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  right: 8%;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--brutal-yellow);
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+.slide::after {
+  content: '';
+  position: absolute;
+  bottom: 15%;
+  left: 5%;
+  width: 80px;
+  height: 80px;
+  background: var(--brutal-blue);
+  opacity: 0.06;
+  pointer-events: none;
+}

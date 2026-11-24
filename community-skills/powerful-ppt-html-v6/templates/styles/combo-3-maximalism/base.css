@@ -1,0 +1,81 @@
+:root {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #141414;
+  --bg-card: rgba(255,255,255,0.04);
+  --accent-1: #ff3d00;
+  --accent-2: #00e5ff;
+  --accent-3: #ffea00;
+  --accent-4: #d500f9;
+  --text-primary: #ffffff;
+  --text-secondary: #888888;
+  --text-accent: #ff3d00;
+  --radius: 2px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Playfair Display', Georgia, serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+.presentation { width: 100vw; height: 100vh; position: relative; }
+
+.slide {
+  width: 100%; height: 100%; position: absolute; top: 0; left: 0;
+  display: flex; flex-direction: column; justify-content: center; padding: 60px 80px;
+  opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none; visibility: hidden;
+}
+
+.slide.active { opacity: 1; transform: none; pointer-events: auto; visibility: visible; }
+
+.hero-title {
+  font-size: clamp(3rem, 10vw, 8rem);
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+
+.hero-subtitle {
+  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-size: clamp(1.2rem, 2.5vw, 2rem);
+  font-weight: 300;
+  color: var(--text-secondary);
+  margin-top: 16px;
+}
+
+.section-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.2em; color: var(--accent-2);
+}
+
+.section-title {
+  font-size: clamp(2rem, 5vw, 4.5rem); font-weight: 900;
+  margin-top: 8px; line-height: 0.95; letter-spacing: -0.03em;
+}
+
+.section-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(1rem, 1.5vw, 1.3rem); color: var(--text-secondary);
+  margin-top: 16px; line-height: 1.6; max-width: 70%;
+}
+
+.ending-title {
+  font-size: clamp(3rem, 8vw, 6rem); font-weight: 900; text-align: center;
+  letter-spacing: -0.05em;
+}
+
+.ending-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(1.2rem, 2vw, 1.8rem); color: var(--text-secondary);
+  text-align: center; margin-top: 16px;
+}
+
+.ending-author {
+  font-size: 1.2rem; color: var(--accent-1); text-align: center; margin-top: 32px;
+}

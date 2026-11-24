@@ -1,0 +1,203 @@
+{
+  "meta": {
+    "description": "ECharts interactive chart option templates for HTML presentations. Each template is a base option that should be customized with actual data and style colors.",
+    "cdn": "https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js",
+    "updated": "2026-04-13"
+  },
+  "colorMapping": {
+    "description": "Map style chart CSS variables to ECharts color array. Replace these with actual values from the selected style's config.json.",
+    "colors": [
+      "var(--chart-color-1)",
+      "var(--chart-color-2)",
+      "var(--chart-color-3)",
+      "var(--chart-color-4)",
+      "var(--chart-color-5)",
+      "var(--chart-color-6)"
+    ],
+    "note": "ECharts does not support CSS variables directly. Resolve to hex values at generation time from the style's config.json css_variables."
+  },
+  "baseOption": {
+    "backgroundColor": "transparent",
+    "textStyle": { "color": "var(--chart-text)" },
+    "title": { "textStyle": { "color": "var(--chart-text)", "fontSize": 20 }, "subtextStyle": { "color": "var(--chart-text-secondary)" } },
+    "legend": { "textStyle": { "color": "var(--chart-text-secondary)" } },
+    "tooltip": { "trigger": "axis" },
+    "grid": { "left": "10%", "right": "10%", "top": "15%", "bottom": "12%", "containLabel": true },
+    "xAxis": { "axisLine": { "lineStyle": { "color": "var(--chart-grid)" } }, "axisLabel": { "color": "var(--chart-text-secondary)" }, "splitLine": { "lineStyle": { "color": "var(--chart-grid)", "type": "dashed" } } },
+    "yAxis": { "axisLine": { "lineStyle": { "color": "var(--chart-grid)" } }, "axisLabel": { "color": "var(--chart-text-secondary)" }, "splitLine": { "lineStyle": { "color": "var(--chart-grid)", "type": "dashed" } } }
+  },
+  "templates": {
+    "bar_chart": {
+      "label": "Bar Chart",
+      "option": {
+        "xAxis": { "type": "category", "data": ["Category A", "Category B", "Category C", "Category D"] },
+        "yAxis": { "type": "value" },
+        "series": [{ "type": "bar", "data": [120, 200, 150, 80], "barWidth": "40%", "itemStyle": { "borderRadius": [4, 4, 0, 0] } }]
+      }
+    },
+    "horizontal_bar_chart": {
+      "label": "Horizontal Bar Chart",
+      "option": {
+        "xAxis": { "type": "value" },
+        "yAxis": { "type": "category", "data": ["Item A", "Item B", "Item C", "Item D", "Item E"] },
+        "series": [{ "type": "bar", "data": [120, 200, 150, 80, 170], "barWidth": "40%", "itemStyle": { "borderRadius": [0, 4, 4, 0] } }]
+      }
+    },
+    "grouped_bar_chart": {
+      "label": "Grouped Bar Chart",
+      "option": {
+        "xAxis": { "type": "category", "data": ["Q1", "Q2", "Q3", "Q4"] },
+        "yAxis": { "type": "value" },
+        "series": [
+          { "name": "2024", "type": "bar", "data": [120, 200, 150, 80] },
+          { "name": "2025", "type": "bar", "data": [150, 180, 200, 120] }
+        ]
+      }
+    },
+    "stacked_bar_chart": {
+      "label": "Stacked Bar Chart",
+      "option": {
+        "xAxis": { "type": "category", "data": ["Q1", "Q2", "Q3", "Q4"] },
+        "yAxis": { "type": "value" },
+        "series": [
+          { "name": "Product A", "type": "bar", "stack": "total", "data": [120, 200, 150, 80] },
+          { "name": "Product B", "type": "bar", "stack": "total", "data": [80, 100, 120, 60] },
+          { "name": "Product C", "type": "bar", "stack": "total", "data": [50, 70, 90, 40] }
+        ]
+      }
+    },
+    "line_chart": {
+      "label": "Line Chart",
+      "option": {
+        "xAxis": { "type": "category", "data": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"] },
+        "yAxis": { "type": "value" },
+        "series": [
+          { "name": "Series A", "type": "line", "smooth": true, "data": [120, 200, 150, 300, 250, 380] },
+          { "name": "Series B", "type": "line", "smooth": true, "data": [80, 150, 180, 220, 200, 280] }
+        ]
+      }
+    },
+    "area_chart": {
+      "label": "Area Chart",
+      "option": {
+        "xAxis": { "type": "category", "data": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"] },
+        "yAxis": { "type": "value" },
+        "series": [
+          { "name": "Series A", "type": "line", "smooth": true, "areaStyle": { "opacity": 0.15 }, "data": [120, 200, 150, 300, 250, 380] }
+        ]
+      }
+    },
+    "stacked_area_chart": {
+      "label": "Stacked Area Chart",
+      "option": {
+        "xAxis": { "type": "category", "data": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"] },
+        "yAxis": { "type": "value" },
+        "series": [
+          { "name": "A", "type": "line", "stack": "total", "areaStyle": { "opacity": 0.3 }, "data": [120, 200, 150, 300, 250, 380] },
+          { "name": "B", "type": "line", "stack": "total", "areaStyle": { "opacity": 0.3 }, "data": [80, 150, 180, 220, 200, 280] }
+        ]
+      }
+    },
+    "pie_chart": {
+      "label": "Pie Chart",
+      "option": {
+        "tooltip": { "trigger": "item" },
+        "series": [{ "type": "pie", "radius": "65%", "data": [{ "value": 40, "name": "Category A" }, { "value": 30, "name": "Category B" }, { "value": 20, "name": "Category C" }, { "value": 10, "name": "Category D" }], "label": { "color": "var(--chart-text-secondary)" } }]
+      }
+    },
+    "donut_chart": {
+      "label": "Donut Chart",
+      "option": {
+        "tooltip": { "trigger": "item" },
+        "series": [{ "type": "pie", "radius": ["40%", "65%"], "data": [{ "value": 40, "name": "Category A" }, { "value": 30, "name": "Category B" }, { "value": 20, "name": "Category C" }, { "value": 10, "name": "Category D" }], "label": { "color": "var(--chart-text-secondary)" } }]
+      }
+    },
+    "radar_chart": {
+      "label": "Radar Chart",
+      "option": {
+        "tooltip": {},
+        "radar": { "indicator": [{ "name": "Dimension A", "max": 100 }, { "name": "Dimension B", "max": 100 }, { "name": "Dimension C", "max": 100 }, { "name": "Dimension D", "max": 100 }, { "name": "Dimension E", "max": 100 }], "axisName": { "color": "var(--chart-text-secondary)" }, "splitArea": { "areaStyle": { "color": ["transparent"] } }, "splitLine": { "lineStyle": { "color": "var(--chart-grid)" } } },
+        "series": [{ "type": "radar", "data": [{ "value": [80, 70, 90, 60, 85], "name": "Profile A" }] }]
+      }
+    },
+    "scatter_chart": {
+      "label": "Scatter Plot",
+      "option": {
+        "xAxis": { "type": "value", "name": "X Axis" },
+        "yAxis": { "type": "value", "name": "Y Axis" },
+        "series": [{ "type": "scatter", "symbolSize": 12, "data": [[10, 20], [30, 40], [50, 30], [70, 60], [90, 80], [20, 50], [40, 70]] }]
+      }
+    },
+    "funnel_chart": {
+      "label": "Funnel Chart",
+      "option": {
+        "tooltip": { "trigger": "item" },
+        "series": [{ "type": "funnel", "left": "10%", "width": "80%", "data": [{ "value": 100, "name": "Stage 1" }, { "value": 80, "name": "Stage 2" }, { "value": 60, "name": "Stage 3" }, { "value": 40, "name": "Stage 4" }, { "value": 20, "name": "Stage 5" }], "label": { "color": "var(--chart-text-secondary)" } }]
+      }
+    },
+    "gauge_chart": {
+      "label": "Gauge Chart",
+      "option": {
+        "series": [{ "type": "gauge", "detail": { "formatter": "{value}%", "color": "var(--chart-text)" }, "data": [{ "value": 72, "name": "Completion" }], "axisLine": { "lineStyle": { "width": 15 } }, "axisTick": { "length": 8 }, "splitLine": { "length": 15 }, "axisLabel": { "color": "var(--chart-text-secondary)" } }]
+      }
+    },
+    "heatmap_chart": {
+      "label": "Heatmap",
+      "option": {
+        "xAxis": { "type": "category", "data": ["Mon", "Tue", "Wed", "Thu", "Fri"] },
+        "yAxis": { "type": "category", "data": ["Morning", "Afternoon", "Evening"] },
+        "visualMap": { "min": 0, "max": 100, "orient": "horizontal", "left": "center", "bottom": "5%", "textStyle": { "color": "var(--chart-text-secondary)" } },
+        "series": [{ "type": "heatmap", "data": [[0,0,50],[0,1,80],[0,2,30],[1,0,70],[1,1,90],[1,2,60],[2,0,40],[2,1,65],[2,2,85],[3,0,55],[3,1,75],[3,2,45],[4,0,60],[4,1,50],[4,2,70]], "label": { "color": "var(--chart-text)" } }]
+      }
+    },
+    "treemap_chart": {
+      "label": "Treemap",
+      "option": {
+        "tooltip": { "trigger": "item" },
+        "series": [{ "type": "treemap", "data": [{ "name": "Category A", "value": 40, "children": [{ "name": "A1", "value": 25 }, { "name": "A2", "value": 15 }] }, { "name": "Category B", "value": 35, "children": [{ "name": "B1", "value": 20 }, { "name": "B2", "value": 15 }] }, { "name": "Category C", "value": 25 }] }]
+      }
+    },
+    "sankey_chart": {
+      "label": "Sankey Diagram",
+      "option": {
+        "tooltip": { "trigger": "item" },
+        "series": [{ "type": "sankey", "layout": "none", "emphasis": { "focus": "adjacency" }, "lineStyle": { "color": "gradient", "curveness": 0.5 }, "data": [{ "name": "Source A" }, { "name": "Source B" }, { "name": "Process C" }, { "name": "Process D" }, { "name": "Output E" }, { "name": "Output F" }], "links": [{ "source": "Source A", "target": "Process C", "value": 60 }, { "source": "Source A", "target": "Process D", "value": 40 }, { "source": "Source B", "target": "Process C", "value": 30 }, { "source": "Source B", "target": "Process D", "value": 70 }, { "source": "Process C", "target": "Output E", "value": 55 }, { "source": "Process C", "target": "Output F", "value": 35 }, { "source": "Process D", "target": "Output E", "value": 45 }, { "source": "Process D", "target": "Output F", "value": 65 }] }]
+      }
+    },
+    "waterfall_chart": {
+      "label": "Waterfall Chart (using stacked bar)",
+      "note": "ECharts has no native waterfall. Use stacked bar with transparent base to simulate.",
+      "option": {
+        "xAxis": { "type": "category", "data": ["Start", "Revenue", "Cost", "Tax", "Net"] },
+        "yAxis": { "type": "value" },
+        "series": [
+          { "name": "base", "type": "bar", "stack": "total", "itemStyle": { "color": "transparent" }, "data": [0, 100, 100, 100, 0] },
+          { "name": "value", "type": "bar", "stack": "total", "data": [100, 50, -30, -10, 110], "itemStyle": { "borderRadius": [4, 4, 0, 0] } }
+        ]
+      }
+    },
+    "dual_axis_line_chart": {
+      "label": "Dual-Axis Line Chart",
+      "option": {
+        "xAxis": { "type": "category", "data": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"] },
+        "yAxis": [{ "type": "value", "name": "Revenue" }, { "type": "value", "name": "Growth %" }],
+        "series": [
+          { "name": "Revenue", "type": "bar", "data": [120, 200, 150, 300, 250, 380] },
+          { "name": "Growth %", "type": "line", "yAxisIndex": 1, "smooth": true, "data": [10, 25, 15, 40, 30, 45] }
+        ]
+      }
+    },
+    "kpi_cards": {
+      "label": "KPI Cards (gauge variant)",
+      "note": "ECharts does not have native KPI cards. Use multiple small gauges or custom HTML for KPI cards.",
+      "option": {
+        "series": [{ "type": "gauge", "startAngle": 220, "endAngle": -40, "min": 0, "max": 100, "detail": { "formatter": "{value}%", "fontSize": 24, "color": "var(--chart-text)" }, "data": [{ "value": 85, "name": "KPI 1" }] }]
+      }
+    }
+  },
+  "htmlTemplate": {
+    "description": "HTML snippet template for embedding ECharts in a presentation slide",
+    "code": "<div id=\"chart-{slideId}\" style=\"width: 100%; height: 400px;\"></div>\n<script src=\"https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js\"></script>\n<script>\n  (function() {\n    var chart = echarts.init(document.getElementById('chart-{slideId}'));\n    var option = {OPTION_PLACEHOLDER};\n    chart.setOption(option);\n    window.addEventListener('resize', function() { chart.resize(); });\n  })();\n</script>"
+  },
+  "exportNote": "ECharts interactive charts cannot be captured by Playwright screenshot export if they require JS execution. Ensure page is fully loaded (networkidle) before screenshot. For PPTX export, ECharts charts render correctly in screenshots since Playwright executes JavaScript."
+}

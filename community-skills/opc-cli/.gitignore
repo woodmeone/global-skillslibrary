@@ -1,0 +1,16 @@
+# Virtual env
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+opc_cli.egg-info/
+dist/
+build/
+
+# Node
+node_modules/
+
+# Test files (do not release)
+test_*.py

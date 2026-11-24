@@ -1,0 +1,310 @@
+{
+  "meta": {
+    "total": 31,
+    "updated": "2026-04-16",
+    "source": "adapted from html-ppt-skill layouts"
+  },
+  "categories": {
+    "openers_transitions": ["cover", "toc", "section-divider"],
+    "text_centric": ["bullets", "two-column", "three-column", "big-quote"],
+    "numbers_data": ["stat-highlight", "kpi-grid", "table", "chart-bar", "chart-line", "chart-pie", "chart-radar"],
+    "code_terminal": ["code", "diff", "terminal"],
+    "diagrams_flows": ["flow-diagram", "arch-diagram", "process-steps", "mindmap"],
+    "plans_comparisons": ["timeline", "roadmap", "gantt", "comparison", "pros-cons", "todo-checklist"],
+    "visuals": ["image-hero", "image-grid"],
+    "closers": ["cta", "thanks"]
+  },
+  "layouts": {
+    "cover": {
+      "name": "Cover",
+      "name_cn": "封面页",
+      "category": "openers_transitions",
+      "use_for": "Deck cover with kicker + huge title + lede + pill row",
+      "compatible_slide_types": ["cover"],
+      "recommended_animations": ["rise-in", "blur-in", "perspective-zoom"],
+      "recommended_fx": ["galaxy-swirl", "constellation", "gradient-blob"]
+    },
+    "toc": {
+      "name": "Table of Contents",
+      "name_cn": "目录页",
+      "category": "openers_transitions",
+      "use_for": "2x3 grid of numbered cards showing deck structure",
+      "compatible_slide_types": ["content", "cards"],
+      "recommended_animations": ["stagger-list", "fade-up"],
+      "recommended_fx": []
+    },
+    "section-divider": {
+      "name": "Section Divider",
+      "name_cn": "章节分隔页",
+      "category": "openers_transitions",
+      "use_for": "Big numbered section break between major topics",
+      "compatible_slide_types": ["content"],
+      "recommended_animations": ["cube-rotate-3d", "perspective-zoom", "ripple-reveal"],
+      "recommended_fx": ["shockwave"]
+    },
+    "bullets": {
+      "name": "Bullet List",
+      "name_cn": "要点列表",
+      "category": "text_centric",
+      "use_for": "Classic bullet list with card-wrapped items",
+      "compatible_slide_types": ["list", "content"],
+      "recommended_animations": ["stagger-list", "fade-up"],
+      "recommended_fx": []
+    },
+    "two-column": {
+      "name": "Two Column",
+      "name_cn": "双栏布局",
+      "category": "text_centric",
+      "use_for": "Concept + example side by side",
+      "compatible_slide_types": ["content", "cards"],
+      "recommended_animations": ["fade-left", "fade-right"],
+      "recommended_fx": []
+    },
+    "three-column": {
+      "name": "Three Column",
+      "name_cn": "三栏布局",
+      "category": "text_centric",
+      "use_for": "Three equal pillars with icons",
+      "compatible_slide_types": ["cards"],
+      "recommended_animations": ["stagger-list"],
+      "recommended_fx": []
+    },
+    "big-quote": {
+      "name": "Big Quote",
+      "name_cn": "大引用",
+      "category": "text_centric",
+      "use_for": "Full-bleed pull quote in editorial style",
+      "compatible_slide_types": ["content"],
+      "recommended_animations": ["fade-up", "blur-in"],
+      "recommended_fx": []
+    },
+    "stat-highlight": {
+      "name": "Stat Highlight",
+      "name_cn": "数据亮点",
+      "category": "numbers_data",
+      "use_for": "One giant number + subtitle with counter animation",
+      "compatible_slide_types": ["content", "chart"],
+      "recommended_animations": ["counter-up", "zoom-pop"],
+      "recommended_fx": ["counter-explosion", "particle-burst"]
+    },
+    "kpi-grid": {
+      "name": "KPI Grid",
+      "name_cn": "KPI 网格",
+      "category": "numbers_data",
+      "use_for": "4 KPIs in a row with up/down deltas",
+      "compatible_slide_types": ["cards", "chart"],
+      "recommended_animations": ["stagger-list", "counter-up"],
+      "recommended_fx": ["counter-explosion"]
+    },
+    "table": {
+      "name": "Data Table",
+      "name_cn": "数据表格",
+      "category": "numbers_data",
+      "use_for": "Data table with hover rows, right-aligned numerics",
+      "compatible_slide_types": ["content"],
+      "recommended_animations": ["fade-up"],
+      "recommended_fx": []
+    },
+    "chart-bar": {
+      "name": "Bar Chart",
+      "name_cn": "柱状图",
+      "category": "numbers_data",
+      "use_for": "Bar chart, theme-aware colors",
+      "compatible_slide_types": ["chart"],
+      "recommended_animations": ["fade-up", "stagger-list"],
+      "recommended_fx": []
+    },
+    "chart-line": {
+      "name": "Line Chart",
+      "name_cn": "折线图",
+      "category": "numbers_data",
+      "use_for": "Dual-line chart with filled area",
+      "compatible_slide_types": ["chart"],
+      "recommended_animations": ["path-draw", "fade-up"],
+      "recommended_fx": []
+    },
+    "chart-pie": {
+      "name": "Pie Chart",
+      "name_cn": "饼图",
+      "category": "numbers_data",
+      "use_for": "Doughnut + takeaways card",
+      "compatible_slide_types": ["chart"],
+      "recommended_animations": ["fade-up"],
+      "recommended_fx": []
+    },
+    "chart-radar": {
+      "name": "Radar Chart",
+      "name_cn": "雷达图",
+      "category": "numbers_data",
+      "use_for": "Radar comparing 2 products on 6 axes",
+      "compatible_slide_types": ["chart"],
+      "recommended_animations": ["fade-up"],
+      "recommended_fx": []
+    },
+    "code": {
+      "name": "Code Block",
+      "name_cn": "代码块",
+      "category": "code_terminal",
+      "use_for": "Syntax-highlighted code via highlight.js",
+      "compatible_slide_types": ["content"],
+      "recommended_animations": ["typewriter", "fade-up"],
+      "recommended_fx": ["typewriter-multi"]
+    },
+    "diff": {
+      "name": "Diff View",
+      "name_cn": "差异对比",
+      "category": "code_terminal",
+      "use_for": "Hand-rolled +/- diff view",
+      "compatible_slide_types": ["content"],
+      "recommended_animations": ["fade-left", "fade-right"],
+      "recommended_fx": []
+    },
+    "terminal": {
+      "name": "Terminal",
+      "name_cn": "终端模拟",
+      "category": "code_terminal",
+      "use_for": "Terminal window mock with traffic-light header",
+      "compatible_slide_types": ["content"],
+      "recommended_animations": ["typewriter"],
+      "recommended_fx": ["typewriter-multi", "matrix-rain"]
+    },
+    "flow-diagram": {
+      "name": "Flow Diagram",
+      "name_cn": "流程图",
+      "category": "diagrams_flows",
+      "use_for": "5-node pipeline with arrows and one highlighted node",
+      "compatible_slide_types": ["steps", "content"],
+      "recommended_animations": ["path-draw", "stagger-list"],
+      "recommended_fx": ["chain-react"]
+    },
+    "arch-diagram": {
+      "name": "Architecture Diagram",
+      "name_cn": "架构图",
+      "category": "diagrams_flows",
+      "use_for": "3-tier architecture grid",
+      "compatible_slide_types": ["content", "steps"],
+      "recommended_animations": ["path-draw", "fade-up"],
+      "recommended_fx": ["knowledge-graph", "neural-net"]
+    },
+    "process-steps": {
+      "name": "Process Steps",
+      "name_cn": "流程步骤",
+      "category": "diagrams_flows",
+      "use_for": "4 numbered steps in cards",
+      "compatible_slide_types": ["steps"],
+      "recommended_animations": ["stagger-list"],
+      "recommended_fx": ["chain-react"]
+    },
+    "mindmap": {
+      "name": "Mind Map",
+      "name_cn": "思维导图",
+      "category": "diagrams_flows",
+      "use_for": "Radial mindmap with SVG path-draw animation",
+      "compatible_slide_types": ["content", "cards"],
+      "recommended_animations": ["path-draw"],
+      "recommended_fx": ["knowledge-graph"]
+    },
+    "timeline": {
+      "name": "Timeline",
+      "name_cn": "时间线",
+      "category": "plans_comparisons",
+      "use_for": "5-point horizontal timeline with dots",
+      "compatible_slide_types": ["steps", "content"],
+      "recommended_animations": ["stagger-list", "path-draw"],
+      "recommended_fx": []
+    },
+    "roadmap": {
+      "name": "Roadmap",
+      "name_cn": "路线图",
+      "category": "plans_comparisons",
+      "use_for": "4-column NOW / NEXT / LATER / VISION",
+      "compatible_slide_types": ["steps", "cards"],
+      "recommended_animations": ["stagger-list"],
+      "recommended_fx": []
+    },
+    "gantt": {
+      "name": "Gantt Chart",
+      "name_cn": "甘特图",
+      "category": "plans_comparisons",
+      "use_for": "12-week gantt chart with 5 parallel tracks",
+      "compatible_slide_types": ["chart", "content"],
+      "recommended_animations": ["fade-up"],
+      "recommended_fx": []
+    },
+    "comparison": {
+      "name": "Comparison",
+      "name_cn": "对比",
+      "category": "plans_comparisons",
+      "use_for": "Before vs After two-panel card",
+      "compatible_slide_types": ["content", "cards"],
+      "recommended_animations": ["fade-left", "fade-right"],
+      "recommended_fx": []
+    },
+    "pros-cons": {
+      "name": "Pros and Cons",
+      "name_cn": "优缺点",
+      "category": "plans_comparisons",
+      "use_for": "Pros and cons two-card layout",
+      "compatible_slide_types": ["content", "cards"],
+      "recommended_animations": ["fade-left", "fade-right"],
+      "recommended_fx": []
+    },
+    "todo-checklist": {
+      "name": "Todo Checklist",
+      "name_cn": "待办清单",
+      "category": "plans_comparisons",
+      "use_for": "Checklist with checked/unchecked states",
+      "compatible_slide_types": ["list", "content"],
+      "recommended_animations": ["stagger-list"],
+      "recommended_fx": []
+    },
+    "image-hero": {
+      "name": "Image Hero",
+      "name_cn": "全幅图片",
+      "category": "visuals",
+      "use_for": "Full-bleed hero with Ken Burns gradient background",
+      "compatible_slide_types": ["content", "cover"],
+      "recommended_animations": ["kenburns", "blur-in"],
+      "recommended_fx": []
+    },
+    "image-grid": {
+      "name": "Image Grid",
+      "name_cn": "图片网格",
+      "category": "visuals",
+      "use_for": "7-cell bento grid with gradient placeholders",
+      "compatible_slide_types": ["cards"],
+      "recommended_animations": ["stagger-list"],
+      "recommended_fx": []
+    },
+    "cta": {
+      "name": "Call to Action",
+      "name_cn": "行动号召",
+      "category": "closers",
+      "use_for": "CTA with big gradient headline + buttons",
+      "compatible_slide_types": ["ending", "content"],
+      "recommended_animations": ["zoom-pop", "gradient-flow"],
+      "recommended_fx": ["particle-burst"]
+    },
+    "thanks": {
+      "name": "Thanks",
+      "name_cn": "致谢页",
+      "category": "closers",
+      "use_for": "Final Thanks page with confetti burst",
+      "compatible_slide_types": ["ending"],
+      "recommended_animations": ["confetti-burst", "rise-in"],
+      "recommended_fx": ["confetti-cannon", "firework"]
+    }
+  },
+  "picking_guide": {
+    "opener": "cover, often followed by toc",
+    "section_break": "section-divider before every major section",
+    "core_content": "bullets, two-column, three-column",
+    "show_numbers": "stat-highlight (single) or kpi-grid (4-up)",
+    "show_plot": "chart-bar / chart-line / chart-pie / chart-radar",
+    "show_diff": "comparison, diff, pros-cons",
+    "show_plan": "timeline, roadmap, gantt, process-steps",
+    "show_architecture": "arch-diagram, flow-diagram, mindmap",
+    "code_demo": "code, terminal",
+    "closer": "cta → thanks"
+  }
+}

@@ -1,0 +1,185 @@
+{
+  "meta": {
+    "description": "SVG chart default color to CSS variable mapping reference. Used when embedding chart SVGs into styled HTML presentations.",
+    "updated": "2026-04-13"
+  },
+  "standard_chart_variables": {
+    "--chart-color-1": "Primary data series color (1st series)",
+    "--chart-color-2": "Secondary data series color (2nd series)",
+    "--chart-color-3": "Tertiary data series color (3rd series)",
+    "--chart-color-4": "Quaternary data series color (4th series)",
+    "--chart-color-5": "Quinary data series color (5th series)",
+    "--chart-color-6": "Senary data series color (6th series)",
+    "--chart-text": "Chart title and primary text",
+    "--chart-text-secondary": "Chart labels, axis text, legend text",
+    "--chart-grid": "Grid lines and axis lines",
+    "--chart-bg": "Chart background (usually transparent)"
+  },
+  "default_svg_colors": {
+    "description": "Default colors used in SVG template files. Replace with CSS variables when embedding in HTML.",
+    "series_colors": {
+      "#2196F3": "--chart-color-1",
+      "#1976D2": "--chart-color-1 (gradient end)",
+      "#4CAF50": "--chart-color-2",
+      "#388E3C": "--chart-color-2 (gradient end)",
+      "#FF9800": "--chart-color-3",
+      "#F57C00": "--chart-color-3 (gradient end)",
+      "#9C27B0": "--chart-color-4",
+      "#7B1FA2": "--chart-color-4 (gradient end)",
+      "#00BCD4": "--chart-color-5",
+      "#0097A7": "--chart-color-5 (gradient end)",
+      "#E91E63": "--chart-color-6",
+      "#C2185B": "--chart-color-6 (gradient end)"
+    },
+    "text_colors": {
+      "#2C3E50": "--chart-text",
+      "#5D6D7E": "--chart-text-secondary",
+      "#7F8C8D": "--chart-text-secondary",
+      "#95A5A6": "--chart-text-secondary"
+    },
+    "structural_colors": {
+      "#E0E0E0": "--chart-grid",
+      "#FFFFFF": "--chart-bg",
+      "#BDBDBD": "--chart-grid"
+    }
+  },
+  "replacement_rules": {
+    "gradients": "For linearGradient stop-color, replace both start and end colors with the same CSS variable (e.g., both stops use var(--chart-color-1)). The gradient effect is maintained by opacity differences.",
+    "backgrounds": "Replace fill='#FFFFFF' on background rects with var(--chart-bg). For dark themes, chart-bg is transparent so the slide background shows through.",
+    "shadows": "Keep filter effects (feGaussianBlur, feOffset) unchanged. They work across all themes.",
+    "text": "Replace all text fill colors with var(--chart-text) for titles and var(--chart-text-secondary) for labels/axis.",
+    "grid_lines": "Replace stroke colors on grid lines and axes with var(--chart-grid)."
+  },
+  "per_chart_mapping": {
+    "bar_chart": {
+      "barGrad1 stops": "--chart-color-1",
+      "barGrad2 stops": "--chart-color-2",
+      "barGrad3 stops": "--chart-color-3",
+      "title fill": "--chart-text",
+      "subtitle fill": "--chart-text-secondary",
+      "grid stroke": "--chart-grid",
+      "axis stroke": "--chart-grid",
+      "label fill": "--chart-text-secondary",
+      "value fill": "--chart-text",
+      "background fill": "--chart-bg"
+    },
+    "horizontal_bar_chart": {
+      "barGrad1 stops": "--chart-color-1",
+      "barGrad2 stops": "--chart-color-2",
+      "barGrad3 stops": "--chart-color-3",
+      "title fill": "--chart-text",
+      "subtitle fill": "--chart-text-secondary",
+      "grid stroke": "--chart-grid",
+      "label fill": "--chart-text-secondary",
+      "value fill": "--chart-text",
+      "background fill": "--chart-bg"
+    },
+    "pie_chart": {
+      "slice 1 fill": "--chart-color-1",
+      "slice 2 fill": "--chart-color-2",
+      "slice 3 fill": "--chart-color-3",
+      "slice 4 fill": "--chart-color-4",
+      "slice 5 fill": "--chart-color-5",
+      "slice 6 fill": "--chart-color-6",
+      "title fill": "--chart-text",
+      "label fill": "--chart-text-secondary",
+      "background fill": "--chart-bg"
+    },
+    "donut_chart": {
+      "arc 1 fill": "--chart-color-1",
+      "arc 2 fill": "--chart-color-2",
+      "arc 3 fill": "--chart-color-3",
+      "arc 4 fill": "--chart-color-4",
+      "arc 5 fill": "--chart-color-5",
+      "center text fill": "--chart-text",
+      "title fill": "--chart-text",
+      "label fill": "--chart-text-secondary",
+      "background fill": "--chart-bg"
+    },
+    "line_chart": {
+      "line1 stroke": "--chart-color-1",
+      "line2 stroke": "--chart-color-2",
+      "line3 stroke": "--chart-color-3",
+      "dot1 fill": "--chart-color-1",
+      "dot2 fill": "--chart-color-2",
+      "dot3 fill": "--chart-color-3",
+      "area1 fill": "--chart-color-1 (opacity 0.1)",
+      "area2 fill": "--chart-color-2 (opacity 0.1)",
+      "title fill": "--chart-text",
+      "grid stroke": "--chart-grid",
+      "label fill": "--chart-text-secondary",
+      "background fill": "--chart-bg"
+    },
+    "radar_chart": {
+      "data polygon stroke": "--chart-color-1",
+      "data polygon fill": "--chart-color-1 (opacity 0.15)",
+      "data dots fill": "--chart-color-1",
+      "grid stroke": "--chart-grid",
+      "axis stroke": "--chart-grid",
+      "title fill": "--chart-text",
+      "label fill": "--chart-text-secondary",
+      "background fill": "--chart-bg"
+    },
+    "kpi_cards": {
+      "card1 accent": "--chart-color-1",
+      "card2 accent": "--chart-color-2",
+      "card3 accent": "--chart-color-3",
+      "card4 accent": "--chart-color-4",
+      "value fill": "--chart-text",
+      "label fill": "--chart-text-secondary",
+      "card bg": "--chart-bg",
+      "card border": "--chart-grid"
+    },
+    "timeline": {
+      "line stroke": "--chart-color-1",
+      "node fill": "--chart-color-1",
+      "active node fill": "--chart-color-2",
+      "title fill": "--chart-text",
+      "date fill": "--chart-text-secondary",
+      "desc fill": "--chart-text-secondary",
+      "background fill": "--chart-bg"
+    },
+    "process_flow": {
+      "step1 bg": "--chart-color-1",
+      "step2 bg": "--chart-color-2",
+      "step3 bg": "--chart-color-3",
+      "step4 bg": "--chart-color-4",
+      "arrow stroke": "--chart-grid",
+      "title fill": "--chart-text",
+      "step text fill": "#ffffff or --chart-text (depends on bg brightness)",
+      "background fill": "--chart-bg"
+    },
+    "swot_analysis": {
+      "strengths bg": "--chart-color-1 (opacity 0.2)",
+      "weaknesses bg": "--chart-color-2 (opacity 0.2)",
+      "opportunities bg": "--chart-color-3 (opacity 0.2)",
+      "threats bg": "--chart-color-4 (opacity 0.2)",
+      "quadrant border": "--chart-grid",
+      "title fill": "--chart-text",
+      "label fill": "--chart-text",
+      "background fill": "--chart-bg"
+    },
+    "funnel_chart": {
+      "stage1 fill": "--chart-color-1",
+      "stage2 fill": "--chart-color-2",
+      "stage3 fill": "--chart-color-3",
+      "stage4 fill": "--chart-color-4",
+      "stage5 fill": "--chart-color-5",
+      "title fill": "--chart-text",
+      "label fill": "--chart-text-secondary",
+      "value fill": "--chart-text",
+      "background fill": "--chart-bg"
+    },
+    "gantt_chart": {
+      "task1 fill": "--chart-color-1",
+      "task2 fill": "--chart-color-2",
+      "task3 fill": "--chart-color-3",
+      "task4 fill": "--chart-color-4",
+      "milestone fill": "--chart-color-5",
+      "grid stroke": "--chart-grid",
+      "title fill": "--chart-text",
+      "label fill": "--chart-text-secondary",
+      "background fill": "--chart-bg"
+    }
+  }
+}

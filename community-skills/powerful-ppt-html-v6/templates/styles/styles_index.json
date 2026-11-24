@@ -1,0 +1,319 @@
+{
+  "meta": {
+    "total": 18,
+    "updated": "2026-04-17",
+    "generator": "sync_styles_index.py"
+  },
+  "categories": {
+    "light": [
+      "combo-1",
+      "combo-10",
+      "combo-12",
+      "combo-15",
+      "combo-16",
+      "combo-4",
+      "combo-6",
+      "combo-7"
+    ],
+    "dark": [
+      "combo-11",
+      "combo-13",
+      "combo-14",
+      "combo-17",
+      "combo-18",
+      "combo-2",
+      "combo-3",
+      "combo-5",
+      "combo-8",
+      "combo-9"
+    ]
+  },
+  "quickLookup": {
+    "tech": [
+      "combo-1",
+      "combo-13",
+      "combo-2",
+      "combo-5",
+      "combo-8",
+      "combo-9"
+    ],
+    "business": [
+      "combo-5",
+      "combo-6"
+    ],
+    "creative": [
+      "combo-1",
+      "combo-10",
+      "combo-12",
+      "combo-3",
+      "combo-7"
+    ],
+    "education": [
+      "combo-4",
+      "combo-7"
+    ]
+  },
+  "styles": {
+    "combo-1": {
+      "id": "combo-1",
+      "name": "Neo-Brutalism + 3D",
+      "name_cn": "数字粗野建筑",
+      "best_for": [
+        "Security",
+        "Tech startups",
+        "Web3"
+      ],
+      "theme": "light",
+      "pptx_bg": "fef9ef",
+      "preview": "combo-1-neo-brutalism/preview.png",
+      "config": "combo-1-neo-brutalism/config.json"
+    },
+    "combo-10": {
+      "id": "combo-10",
+      "name": "Coffee Editorial",
+      "name_cn": "咖啡编辑风",
+      "best_for": [
+        "Creative portfolios",
+        "Lifestyle brands",
+        "Editorial content",
+        "Food & Beverage"
+      ],
+      "theme": "light",
+      "pptx_bg": "fffcf5",
+      "preview": "combo-10-coffee-editorial/preview.png",
+      "config": "combo-10-coffee-editorial/config.json"
+    },
+    "combo-11": {
+      "id": "combo-11",
+      "name": "Immersive 3D Scene",
+      "name_cn": "沉浸式3D场景",
+      "best_for": [
+        "Entertainment",
+        "Brand showcase",
+        "Immersive storytelling",
+        "Premium events"
+      ],
+      "theme": "dark",
+      "pptx_bg": "111111",
+      "preview": "combo-11-immersive-3d/preview.png",
+      "config": "combo-11-immersive-3d/config.json"
+    },
+    "combo-12": {
+      "id": "combo-12",
+      "name": "Vintage Newspaper",
+      "name_cn": "旧报纸复古风",
+      "best_for": [
+        "Editorial content",
+        "History & Culture",
+        "Literary analysis",
+        "Journalism",
+        "Retro branding"
+      ],
+      "theme": "light",
+      "pptx_bg": "ddd5c0",
+      "preview": "combo-12-vintage-newspaper/preview.png",
+      "config": "combo-12-vintage-newspaper/config.json"
+    },
+    "combo-13": {
+      "id": "combo-13",
+      "name": "Tokyo Night",
+      "name_cn": "东京夜色",
+      "best_for": [
+        "Tech sharing",
+        "Infrastructure",
+        "DevOps",
+        "Cold tech"
+      ],
+      "theme": "dark",
+      "pptx_bg": "1a1b26",
+      "preview": "combo-13-tokyo-night/preview.png",
+      "config": "combo-13-tokyo-night/config.json"
+    },
+    "combo-14": {
+      "id": "combo-14",
+      "name": "Dracula",
+      "name_cn": "德古拉暗夜",
+      "best_for": [
+        "Code-heavy tech",
+        "Developer talks",
+        "Dark theme lovers"
+      ],
+      "theme": "dark",
+      "pptx_bg": "282a36",
+      "preview": "combo-14-dracula/preview.png",
+      "config": "combo-14-dracula/config.json"
+    },
+    "combo-15": {
+      "id": "combo-15",
+      "name": "Corporate Clean",
+      "name_cn": "企业商务",
+      "best_for": [
+        "Board meetings",
+        "B2B sales",
+        "Finance",
+        "Insurance"
+      ],
+      "theme": "light",
+      "pptx_bg": "ffffff",
+      "preview": "combo-15-corporate-clean/preview.png",
+      "config": "combo-15-corporate-clean/config.json"
+    },
+    "combo-16": {
+      "id": "combo-16",
+      "name": "Pitch Deck VC",
+      "name_cn": "融资路演",
+      "best_for": [
+        "Fundraising",
+        "Startup pitch",
+        "Investor meeting",
+        "Seed round"
+      ],
+      "theme": "light",
+      "pptx_bg": "ffffff",
+      "preview": "combo-16-pitch-deck-vc/preview.png",
+      "config": "combo-16-pitch-deck-vc/config.json"
+    },
+    "combo-17": {
+      "id": "combo-17",
+      "name": "Glassmorphism",
+      "name_cn": "毛玻璃",
+      "best_for": [
+        "Apple-style launches",
+        "Product features",
+        "Modern design",
+        "Premium showcase"
+      ],
+      "theme": "dark",
+      "pptx_bg": "0b1024",
+      "preview": "combo-17-glassmorphism/preview.png",
+      "config": "combo-17-glassmorphism/config.json"
+    },
+    "combo-18": {
+      "id": "combo-18",
+      "name": "Aurora",
+      "name_cn": "极光渐变",
+      "best_for": [
+        "Cover pages",
+        "CTA slides",
+        "Closing pages",
+        "Visual impact"
+      ],
+      "theme": "dark",
+      "pptx_bg": "06091c",
+      "preview": "combo-18-aurora/preview.png",
+      "config": "combo-18-aurora/config.json"
+    },
+    "combo-2": {
+      "id": "combo-2",
+      "name": "Retro-Futurism",
+      "name_cn": "80年代未来",
+      "best_for": [
+        "Cyberpunk",
+        "AI tutorials",
+        "Programming"
+      ],
+      "theme": "dark",
+      "pptx_bg": "0d0221",
+      "preview": "combo-2-retro-futurism/preview.png",
+      "config": "combo-2-retro-futurism/config.json"
+    },
+    "combo-3": {
+      "id": "combo-3",
+      "name": "Maximalism + Typography",
+      "name_cn": "极繁主义排版",
+      "best_for": [
+        "Fashion",
+        "Art",
+        "Culture"
+      ],
+      "theme": "dark",
+      "pptx_bg": "0a0a0a",
+      "preview": "combo-3-maximalism/preview.png",
+      "config": "combo-3-maximalism/config.json"
+    },
+    "combo-4": {
+      "id": "combo-4",
+      "name": "Naive + Typography",
+      "name_cn": "朴素排版",
+      "best_for": [
+        "Personal blog",
+        "Handmade",
+        "Education"
+      ],
+      "theme": "light",
+      "pptx_bg": "faf8f5",
+      "preview": "combo-4-naive/preview.png",
+      "config": "combo-4-naive/config.json"
+    },
+    "combo-5": {
+      "id": "combo-5",
+      "name": "Bento + 3D Glass",
+      "name_cn": "便当盒3D玻璃",
+      "best_for": [
+        "Product showcase",
+        "SaaS",
+        "Dashboards"
+      ],
+      "theme": "dark",
+      "pptx_bg": "0f0f23",
+      "preview": "combo-5-bento-glass/preview.png",
+      "config": "combo-5-bento-glass/config.json"
+    },
+    "combo-6": {
+      "id": "combo-6",
+      "name": "Neo-Minimalism",
+      "name_cn": "新极简主义",
+      "best_for": [
+        "Enterprise",
+        "Investment",
+        "Premium brand"
+      ],
+      "theme": "light",
+      "pptx_bg": "ffffff",
+      "preview": "combo-6-neo-minimalism/preview.png",
+      "config": "combo-6-neo-minimalism/config.json"
+    },
+    "combo-7": {
+      "id": "combo-7",
+      "name": "Memphis",
+      "name_cn": "孟菲斯",
+      "best_for": [
+        "Creative",
+        "Kids education",
+        "Fun science"
+      ],
+      "theme": "light",
+      "pptx_bg": "fffbe6",
+      "preview": "combo-7-memphis/preview.png",
+      "config": "combo-7-memphis/config.json"
+    },
+    "combo-8": {
+      "id": "combo-8",
+      "name": "Blueprint",
+      "name_cn": "蓝图",
+      "best_for": [
+        "Technical docs",
+        "Architecture",
+        "Engineering"
+      ],
+      "theme": "dark",
+      "pptx_bg": "0a1628",
+      "preview": "combo-8-blueprint/preview.png",
+      "config": "combo-8-blueprint/config.json"
+    },
+    "combo-9": {
+      "id": "combo-9",
+      "name": "Keynote Dark",
+      "name_cn": "乔布斯深色科技",
+      "best_for": [
+        "Product launch",
+        "Data reports",
+        "Tech talks"
+      ],
+      "theme": "dark",
+      "pptx_bg": "000000",
+      "preview": "combo-9-keynote-dark/preview.png",
+      "config": "combo-9-keynote-dark/config.json"
+    }
+  }
+}

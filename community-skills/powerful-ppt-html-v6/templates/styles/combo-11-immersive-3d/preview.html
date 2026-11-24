@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Combo-11 Immersive 3D Scene - Preview</title>
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="effects.css">
+<link rel="stylesheet" href="components.css">
+</head>
+<body>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:20%"></div></div>
+
+<div class="presentation" id="presentation">
+
+  <div class="slide active" data-slide="1" data-perspective="center">
+    <div class="scene-3d">
+      <div class="depth-grid"></div>
+      <div class="depth-grid-2"></div>
+      <div class="horizon-glow"></div>
+      <div class="particle-field">
+        <div class="particle"></div><div class="particle accent-warm"></div>
+        <div class="particle"></div><div class="particle accent-cool"></div>
+        <div class="particle"></div><div class="particle accent-warm"></div>
+        <div class="particle"></div><div class="particle accent-cool"></div>
+        <div class="particle"></div><div class="particle"></div>
+        <div class="particle accent-cool"></div><div class="particle accent-warm"></div>
+      </div>
+    </div>
+    <div class="scan-line"></div>
+    <div class="vignette"></div>
+    <div class="noise-layer"></div>
+    <div style="position:relative;z-index:2;">
+      <div class="section-label">IMMERSIVE 3D SCENE</div>
+      <h1 class="hero-title">沉浸式3D场景</h1>
+      <p class="hero-subtitle">移动鼠标感受3D空间视差 · 切换页面体验视角转换</p>
+      <div style="margin-top:24px;">
+        <span class="hero-tag">3D Perspective</span>
+        <span class="hero-tag tag-cool">Glass Morphism</span>
+        <span class="hero-tag">Particle FX</span>
+        <span class="hero-tag tag-cool">Glitch Scan</span>
+      </div>
+      <div class="accent-line" style="margin-top:32px;"></div>
+    </div>
+  </div>
+
+  <div class="slide" data-slide="2" data-perspective="left">
+    <div class="scene-3d">
+      <div class="depth-grid"></div>
+      <div class="depth-grid-2"></div>
+      <div class="horizon-glow"></div>
+      <div class="particle-field">
+        <div class="particle accent-warm"></div><div class="particle"></div>
+        <div class="particle accent-cool"></div><div class="particle"></div>
+        <div class="particle accent-warm"></div><div class="particle accent-cool"></div>
+        <div class="particle"></div><div class="particle"></div>
+        <div class="particle accent-cool"></div><div class="particle accent-warm"></div>
+        <div class="particle"></div><div class="particle"></div>
+      </div>
+    </div>
+    <div class="scan-line"></div>
+    <div class="vignette"></div>
+    <div style="position:relative;z-index:2;">
+      <div class="section-label">3D GLASS CARDS</div>
+      <h2 class="section-title">3D玻璃态卡片</h2>
+      <p class="section-desc">鼠标悬停卡片体验3D倾斜效果 — 源自liquidGL的折射与倾斜交互</p>
+      <div class="card-grid">
+        <div class="brutal-card">
+          <div class="depth-badge">WebGL</div>
+          <h3 style="margin-top:12px;font-size:1.2rem;font-weight:600;">3D透视倾斜</h3>
+          <p style="margin-top:8px;color:var(--text-secondary);font-size:0.9rem;line-height:1.6;">perspective + rotateX/Y 实现真实3D空间感</p>
+        </div>
+        <div class="brutal-card">
+          <div class="depth-badge">GLASS</div>
+          <h3 style="margin-top:12px;font-size:1.2rem;font-weight:600;">液态玻璃折射</h3>
+          <p style="margin-top:8px;color:var(--text-secondary);font-size:0.9rem;line-height:1.6;">backdrop-filter blur + 半透明背景模拟折射</p>
+        </div>
+        <div class="brutal-card">
+          <div class="depth-badge">PARTICLE</div>
+          <h3 style="margin-top:12px;font-size:1.2rem;font-weight:600;">粒子场效果</h3>
+          <p style="margin-top:8px;color:var(--text-secondary);font-size:0.9rem;line-height:1.6;">CSS动画模拟particlesGL的位移粒子系统</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide" data-slide="3" data-perspective="right">
+    <div class="scene-3d">
+      <div class="depth-grid"></div>
+      <div class="depth-grid-2"></div>
+      <div class="horizon-glow"></div>
+      <div class="particle-field">
+        <div class="particle"></div><div class="particle accent-cool"></div>
+        <div class="particle accent-warm"></div><div class="particle"></div>
+        <div class="particle accent-cool"></div><div class="particle"></div>
+        <div class="particle accent-warm"></div><div class="particle accent-cool"></div>
+        <div class="particle"></div><div class="particle"></div>
+        <div class="particle accent-warm"></div><div class="particle"></div>
+      </div>
+    </div>
+    <div class="scan-line"></div>
+    <div class="vignette"></div>
+    <div style="position:relative;z-index:2;">
+      <div class="section-label">DEPTH EFFECTS</div>
+      <h2 class="section-title">深度场景效果</h2>
+      <p class="section-desc">多层Z轴叠加营造沉浸式3D空间 — 透视网格 + 浮动光球 + 粒子场</p>
+      <div class="step-group">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div>
+            <div style="font-weight:600;font-size:1.05rem;">透视网格地面</div>
+            <div style="color:var(--text-secondary);margin-top:4px;font-size:0.9rem;">perspective + rotateX 创建消失点网格，模拟3D空间地面</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num level-important">2</div>
+          <div>
+            <div style="font-weight:600;font-size:1.05rem;">浮动光球系统</div>
+            <div style="color:var(--text-secondary);margin-top:4px;font-size:0.9rem;">双层radial-gradient + blur + 动画，营造深度光效氛围</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num level-optional">3</div>
+          <div>
+            <div style="font-weight:600;font-size:1.05rem;">扫描线 + 噪点层</div>
+            <div style="color:var(--text-secondary);margin-top:4px;font-size:0.9rem;">glitchGL风格的数字噪点和扫描线，增加科技质感</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num level-required">4</div>
+          <div>
+            <div style="font-weight:600;font-size:1.05rem;">3D入场动画</div>
+            <div style="color:var(--text-secondary);margin-top:4px;font-size:0.9rem;">translateZ + rotateX/Y 实现电影级3D空间入场效果</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide" data-slide="4" data-perspective="top">
+    <div class="scene-3d">
+      <div class="depth-grid"></div>
+      <div class="depth-grid-2"></div>
+      <div class="horizon-glow"></div>
+      <div class="particle-field">
+        <div class="particle accent-cool"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle accent-warm"></div>
+        <div class="particle accent-cool"></div><div class="particle accent-warm"></div>
+        <div class="particle"></div><div class="particle"></div>
+        <div class="particle accent-warm"></div><div class="particle accent-cool"></div>
+        <div class="particle"></div><div class="particle"></div>
+      </div>
+    </div>
+    <div class="scan-line"></div>
+    <div class="vignette"></div>
+    <div style="position:relative;z-index:2;">
+      <div class="section-label">COMPONENTS</div>
+      <h2 class="section-title">组件库展示</h2>
+      <div class="case-list">
+        <div class="case-item">
+          <div class="case-icon">🎯</div>
+          <div>
+            <div style="font-weight:600;">glass-panel 玻璃面板</div>
+            <div style="color:var(--text-secondary);font-size:0.85rem;">旋转锥形渐变 + 毛玻璃背景</div>
+          </div>
+        </div>
+        <div class="case-item">
+          <div class="case-icon">✨</div>
+          <div>
+            <div style="font-weight:600;">glow-text 发光文字</div>
+            <div style="color:var(--text-secondary);font-size:0.85rem;">text-shadow 多层辉光效果</div>
+          </div>
+        </div>
+        <div class="case-item">
+          <div class="case-icon">🔮</div>
+          <div>
+            <div style="font-weight:600;">depth-badge 深度徽章</div>
+            <div style="color:var(--text-secondary);font-size:0.85rem;">半透明边框 + 微妙发光</div>
+          </div>
+        </div>
+        <div class="case-item">
+          <div class="case-icon">📐</div>
+          <div>
+            <div style="font-weight:600;">accent-line 渐变线条</div>
+            <div style="color:var(--text-secondary);font-size:0.85rem;">红→青双色渐变装饰线</div>
+          </div>
+        </div>
+      </div>
+      <div class="glass-panel" style="margin-top:24px;">
+        <div class="depth-badge">LIQUID GLASS</div>
+        <h3 style="margin-top:12px;font-size:1.3rem;font-weight:600;" class="glow-text">液态玻璃面板</h3>
+        <p style="margin-top:8px;color:var(--text-secondary);font-size:0.9rem;">源自NaughtyDuk liquidGL的玻璃拟态效果 — 旋转光晕 + 毛玻璃 + 3D倾斜</p>
+        <div class="accent-line"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide" data-slide="5" data-perspective="center">
+    <div class="scene-3d">
+      <div class="depth-grid"></div>
+      <div class="depth-grid-2"></div>
+      <div class="horizon-glow"></div>
+      <div class="particle-field">
+        <div class="particle accent-warm"></div><div class="particle accent-cool"></div>
+        <div class="particle"></div><div class="particle accent-warm"></div>
+        <div class="particle accent-cool"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle accent-cool"></div>
+        <div class="particle accent-warm"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle accent-cool"></div>
+      </div>
+    </div>
+    <div class="scan-line"></div>
+    <div class="vignette"></div>
+    <div style="position:relative;z-index:2;text-align:center;">
+      <h1 class="ending-title">IMMERSIVE 3D</h1>
+      <p class="ending-subtitle">将Web的3D沉浸体验，带入每一页演示</p>
+      <p class="ending-author">Combo-11 · Inspired by NaughtyDuk T11</p>
+      <div class="accent-line" style="margin:32px auto 0;"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="nav-container" id="navContainer">
+  <div class="nav-dots" id="navDots"></div>
+  <div class="page-indicator"><span id="currentPage">1</span>/<span id="totalPages">5</span></div>
+</div>
+
+<script>
+(function() {
+  var current = 1;
+  var total = document.querySelectorAll('.slide').length;
+  var pres = document.getElementById('presentation');
+  var navContainer = document.getElementById('navContainer');
+  var progressFill = document.getElementById('progressFill');
+  var currentPageEl = document.getElementById('currentPage');
+  var navDotsEl = document.getElementById('navDots');
+  var hideTimer = null;
+
+  for (var i = 1; i <= total; i++) {
+    var dot = document.createElement('button');
+    dot.className = 'nav-dot' + (i === 1 ? ' active' : '');
+    dot.setAttribute('data-page', i);
+    dot.setAttribute('aria-label', 'Go to slide ' + i);
+    navDotsEl.appendChild(dot);
+  }
+
+  function showNav() {
+    navContainer.classList.add('visible');
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(function() {
+      navContainer.classList.remove('visible');
+    }, 3000);
+  }
+
+  function showSlide(n, direction) {
+    if (n === current) return;
+    var slides = document.querySelectorAll('.slide');
+    var oldSlide = document.querySelector('.slide.active');
+    var newSlide = document.querySelector('[data-slide="' + n + '"]');
+    if (!newSlide) return;
+
+    if (oldSlide) {
+      oldSlide.classList.remove('active');
+      oldSlide.classList.remove('exit-left', 'exit-right');
+      var dir = direction || (n > current ? 'left' : 'right');
+      oldSlide.classList.add(dir === 'left' ? 'exit-left' : 'exit-right');
+    }
+
+    newSlide.classList.remove('exit-left', 'exit-right');
+    newSlide.classList.add('active');
+
+    var newPerspective = newSlide.getAttribute('data-perspective');
+    var originMap = {
+      'center': '50% 50%',
+      'left': '35% 45%',
+      'right': '65% 45%',
+      'top': '50% 35%'
+    };
+    pres.style.perspectiveOrigin = originMap[newPerspective] || '50% 50%';
+
+    current = n;
+    currentPageEl.textContent = current;
+    progressFill.style.width = (current / total * 100) + '%';
+
+    var dots = document.querySelectorAll('.nav-dot');
+    dots.forEach(function(d, idx) {
+      d.classList.toggle('active', idx + 1 === current);
+    });
+
+    showNav();
+  }
+
+  function nextSlide() {
+    if (current < total) showSlide(current + 1, 'left');
+  }
+
+  function prevSlide() {
+    if (current > 1) showSlide(current - 1, 'right');
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+    if (e.key === 'Home') { e.preventDefault(); showSlide(1, 'right'); }
+    if (e.key === 'End') { e.preventDefault(); showSlide(total, 'left'); }
+  });
+
+  var wheelTimer = null;
+  document.addEventListener('wheel', function(e) {
+    e.preventDefault();
+    if (wheelTimer) return;
+    wheelTimer = setTimeout(function() { wheelTimer = null; }, 800);
+    if (e.deltaY > 0) nextSlide();
+    else prevSlide();
+  }, { passive: false });
+
+  var touchStartX = 0;
+  document.addEventListener('touchstart', function(e) {
+    touchStartX = e.touches[0].clientX;
+  }, { passive: true });
+  document.addEventListener('touchend', function(e) {
+    var diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) nextSlide();
+      else prevSlide();
+    }
+  }, { passive: true });
+
+  navDotsEl.addEventListener('click', function(e) {
+    var dot = e.target.closest('.nav-dot');
+    if (dot) {
+      var page = parseInt(dot.getAttribute('data-page'));
+      showSlide(page, page > current ? 'left' : 'right');
+    }
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    var activeSlide = document.querySelector('.slide.active');
+    if (!activeSlide) return;
+
+    var scene = activeSlide.querySelector('.scene-3d');
+    if (!scene) return;
+
+    var x = (e.clientX / window.innerWidth - 0.5) * 2;
+    var y = (e.clientY / window.innerHeight - 0.5) * 2;
+
+    var basePerspective = activeSlide.getAttribute('data-perspective');
+    var baseRotateY = 0, baseRotateX = 0, baseTranslateX = 0, baseTranslateY = 0;
+
+    if (basePerspective === 'left') { baseRotateY = 3; baseTranslateX = -2; }
+    else if (basePerspective === 'right') { baseRotateY = -3; baseTranslateX = 2; }
+    else if (basePerspective === 'top') { baseRotateX = 3; baseTranslateY = -1; }
+
+    var rotateY = baseRotateY + x * 2;
+    var rotateX = baseRotateX - y * 1.5;
+    var translateX = baseTranslateX + x * 1.5;
+    var translateY = baseTranslateY - y * 0.8;
+
+    scene.style.transform = 'rotateY(' + rotateY + 'deg) rotateX(' + rotateX + 'deg) translateX(' + translateX + '%) translateY(' + translateY + '%)';
+
+    var grid = activeSlide.querySelector('.depth-grid');
+    if (grid) {
+      grid.style.transform = 'perspective(600px) rotateX(' + (60 - y * 3) + 'deg) rotateY(' + (x * 2) + 'deg)';
+    }
+
+    var grid2 = activeSlide.querySelector('.depth-grid-2');
+    if (grid2) {
+      grid2.style.transform = 'perspective(400px) rotateX(' + (55 - y * 2) + 'deg) rotateY(' + (x * 1.5) + 'deg) translateZ(-100px)';
+    }
+
+    var horizon = activeSlide.querySelector('.horizon-glow');
+    if (horizon) {
+      horizon.style.transform = 'translateX(' + (x * 3) + '%)';
+    }
+
+    var pf = activeSlide.querySelector('.particle-field');
+    if (pf) {
+      pf.style.transform = 'translateX(' + (x * -1) + '%) translateY(' + (y * -0.5) + '%)';
+    }
+  });
+
+  showNav();
+})();
+</script>
+</body>
+</html>

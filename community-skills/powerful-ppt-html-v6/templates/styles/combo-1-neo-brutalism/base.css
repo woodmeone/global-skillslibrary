@@ -1,0 +1,120 @@
+:root {
+  --bg-primary: #fef9ef;
+  --bg-secondary: #f0e6d3;
+  --bg-card: #ffffff;
+  --brutal-black: #1a1a1a;
+  --brutal-red: #ff4444;
+  --brutal-yellow: #ffe14d;
+  --brutal-blue: #4dabf7;
+  --brutal-green: #51cf66;
+  --brutal-purple: #cc5de8;
+  --brutal-orange: #ff922b;
+  --text-primary: #1a1a1a;
+  --text-secondary: #6b6b6b;
+  --text-accent: #ff4444;
+  --shadow-brutal: 4px 4px 0px var(--brutal-black);
+  --shadow-brutal-lg: 6px 6px 0px var(--brutal-black);
+  --shadow-brutal-hover: 8px 8px 0px var(--brutal-black);
+  --border-brutal: 3px solid var(--brutal-black);
+  --radius: 0px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Arial Black', 'Helvetica Neue', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+.presentation {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.slide {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px 80px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.slide.active {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.hero-title {
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  text-shadow: 3px 3px 0 var(--brutal-yellow);
+}
+
+.hero-subtitle {
+  font-size: clamp(1.2rem, 2.5vw, 2rem);
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-top: 16px;
+}
+
+.section-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-accent);
+}
+
+.section-title {
+  font-size: clamp(1.8rem, 4vw, 3.5rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-top: 8px;
+  line-height: 1.1;
+}
+
+.section-desc {
+  font-size: clamp(1rem, 1.5vw, 1.3rem);
+  color: var(--text-secondary);
+  margin-top: 16px;
+  line-height: 1.6;
+  max-width: 70%;
+}
+
+.ending-title {
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.ending-subtitle {
+  font-size: clamp(1.2rem, 2vw, 1.8rem);
+  color: var(--text-secondary);
+  text-align: center;
+  margin-top: 16px;
+}
+
+.ending-author {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-top: 32px;
+}

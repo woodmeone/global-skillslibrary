@@ -1,0 +1,19 @@
+.slide::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(rgba(42,108,184,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(42,108,184,0.06) 1px, transparent 1px);
+  background-size: 100px 100px;
+  pointer-events: none;
+}
+
+.slide::after {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(rgba(42,108,184,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(42,108,184,0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+}

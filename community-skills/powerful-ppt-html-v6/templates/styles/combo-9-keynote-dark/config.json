@@ -1,0 +1,40 @@
+{
+  "id": "combo-9",
+  "name": "Keynote Dark",
+  "name_cn": "乔布斯深色科技",
+  "version": "5.0.0",
+  "best_for": ["Product launch", "Data reports", "Tech talks"],
+  "theme": "dark",
+  "pptx_bg": "000000",
+  "chart_support": "echarts+svg",
+  "micro_interactions": ["blob-float", "wave", "pulse", "glow"],
+  "css_variables": {
+    "--color-primary": "#60a5fa",
+    "--color-secondary": "#a78bfa",
+    "--color-accent": "#f093fb",
+    "--color-success": "#34d399",
+    "--color-warning": "#fbbf24",
+    "--color-danger": "#f87171",
+    "--chart-color-1": "#60a5fa",
+    "--chart-color-2": "#a78bfa",
+    "--chart-color-3": "#f093fb",
+    "--chart-color-4": "#34d399",
+    "--chart-color-5": "#fbbf24",
+    "--chart-color-6": "#f87171",
+    "--chart-text": "#ffffff",
+    "--chart-text-secondary": "#9ca3af",
+    "--chart-grid": "rgba(156,163,175,0.15)",
+    "--chart-bg": "transparent"
+  },
+  "features": [
+    "大尺寸浮动光斑（600px/500px/400px）使用渐变色",
+    "独立的背景层（.bg-gradient + .bg-blob）",
+    "内容居中对齐",
+    "卡片 hover 效果",
+    "标签有边框",
+    "feature-list 使用圆点",
+    "更大的 big-number 字体（clamp(4rem, 15vw, 10rem)）",
+    "hero-title 使用白色到紫色渐变"
+  ],
+  "includes": ["base.css", "effects.css", "components.css"]
+}

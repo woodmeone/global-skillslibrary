@@ -1,0 +1,53 @@
+# 依赖与缓存，不进库
+node_modules/
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# ---- 嵌套 git 仓库：各自有远端，本库不收录 ----
+# 它们的真实来源见 SKILLS.md 的「来源」列。
+# 写成 /X/ 是只匹配根级目录，不会误伤子目录里的同名目录。
+/MidNight/
+/git-native-sop/
+/mattpocock-skills/
+/lead-learn/
+/_backup/
+
+# ---- 大文件：模型权重不进库 ----
+# bge-m3 是 2161 MB，超 GitHub 单文件 100 MB 硬限制。
+# 新环境用 recall 自带的 scripts/download_bge_m3.py 拉取。
+models/
+*.onnx_data
+*.onnx
+*.safetensors
+*.bin
+*.gguf
+
+# ---- 凭据：一律不进库 ----
+*cookies*.txt
+*cookies*.json
+cookiecloud.json
+.env
+.env.*
+*.pem
+id_rsa*
+
+# ---- 运行产物 ----
+*.log
+media-downloads/
+.favorites-out/
+scratch/
+.scratch/
+
+# ---- 编辑器 ----
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db

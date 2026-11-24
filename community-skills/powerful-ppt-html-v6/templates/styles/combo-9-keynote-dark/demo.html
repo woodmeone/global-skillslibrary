@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>乔布斯风格演示 - Keynote Dark v5.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script>
+        if (typeof echarts === 'undefined') {
+            var script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js';
+            document.head.appendChild(script);
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #60a5fa;
+            --color-secondary: #a78bfa;
+            --color-accent: #f093fb;
+            --color-success: #34d399;
+            --color-warning: #fbbf24;
+            --color-danger: #f87171;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #000;
+            min-height: 100vh;
+            overflow: hidden;
+            color: white;
+        }
+        
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: clamp(30px, 5vw, 60px);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-30px);
+            transition: opacity 0.6s ease, transform 0.6s ease, visibility 0.6s ease;
+        }
+        
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .slide.exiting {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(30px);
+        }
+        
+        .hero-title {
+            font-size: clamp(2.5rem, 8vw, 6rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 50%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+            text-align: center;
+            letter-spacing: -0.02em;
+        }
+        
+        .section-title {
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .subtitle {
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            max-width: 800px;
+            line-height: 1.8;
+        }
+        
+        .highlight {
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+        
+        .highlight-accent {
+            color: var(--color-accent);
+            font-weight: 600;
+        }
+        
+        .highlight-success {
+            color: var(--color-success);
+            font-weight: 600;
+        }
+        
+        .highlight-warning {
+            color: var(--color-warning);
+            font-weight: 600;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: clamp(24px, 4vw, 40px);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+        }
+        
+        .card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px);
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease forwards;
+            opacity: 0;
+        }
+        
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+        .delay-4 { animation-delay: 0.8s; }
+        .delay-5 { animation-delay: 1s; }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .wave {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .glow {
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        @keyframes glow {
+            0%, 100% { 
+                box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+            }
+            50% { 
+                box-shadow: 0 0 40px rgba(96, 165, 250, 0.6);
+            }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        .process-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(16px, 3vw, 32px);
+            flex-wrap: wrap;
+        }
+        
+        .process-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: clamp(20px, 3vw, 32px);
+            min-width: clamp(120px, 15vw, 180px);
+        }
+        
+        .process-step svg {
+            width: clamp(40px, 5vw, 60px);
+            height: clamp(40px, 5vw, 60px);
+            margin-bottom: 16px;
+        }
+        
+        .process-arrow {
+            width: clamp(30px, 4vw, 50px);
+            height: clamp(30px, 4vw, 50px);
+            flex-shrink: 0;
+        }
+        
+        .feature-list {
+            list-style: none;
+            text-align: left;
+        }
+        
+        .feature-list li {
+            padding: 12px 0;
+            padding-left: 32px;
+            position: relative;
+            font-size: clamp(1rem, 2vw, 1.1rem);
+            color: rgba(255, 255, 255, 0.85);
+        }
+        
+        .feature-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            background: #60a5fa;
+            border-radius: 50%;
+        }
+        
+        .nav-dots {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 100;
+        }
+        
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-dot.active {
+            background: #60a5fa;
+            transform: scale(1.5);
+        }
+        
+        .nav-dot:hover {
+            background: rgba(255, 255, 255, 0.6);
+        }
+        
+        .big-number {
+            font-size: clamp(4rem, 15vw, 10rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+        
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: clamp(16px, 3vw, 32px);
+            width: 100%;
+            max-width: 1200px;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: clamp(24px, 3vw, 40px);
+        }
+        
+        .chart-container {
+            width: 100%;
+            max-width: 900px;
+            height: clamp(300px, 40vh, 450px);
+        }
+        
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at 20% 30%, rgba(120, 119, 198, 0.15) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 70%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                        radial-gradient(ellipse at 50% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 70%),
+                        #000;
+            z-index: -2;
+        }
+        
+        .bg-blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            animation: blobFloat 20s ease-in-out infinite;
+            z-index: -1;
+        }
+        
+        .blob-1 {
+            width: 600px;
+            height: 600px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            top: -200px;
+            right: -100px;
+            animation-delay: 0s;
+        }
+        
+        .blob-2 {
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            bottom: -150px;
+            left: -100px;
+            animation-delay: -7s;
+        }
+        
+        .blob-3 {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -14s;
+            opacity: 0.15;
+        }
+        
+        @keyframes blobFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -30px) scale(1.05); }
+            50% { transform: translate(-20px, 20px) scale(0.95); }
+            75% { transform: translate(20px, 10px) scale(1.02); }
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin: 4px;
+        }
+        
+        .tag-primary {
+            background: rgba(96, 165, 250, 0.2);
+            color: var(--color-primary);
+            border: 1px solid rgba(96, 165, 250, 0.3);
+        }
+        
+        .tag-secondary {
+            background: rgba(167, 139, 250, 0.2);
+            color: var(--color-secondary);
+            border: 1px solid rgba(167, 139, 250, 0.3);
+        }
+        
+        .tag-accent {
+            background: rgba(240, 147, 251, 0.2);
+            color: var(--color-accent);
+            border: 1px solid rgba(240, 147, 251, 0.3);
+        }
+        
+        .tag-success {
+            background: rgba(52, 211, 153, 0.2);
+            color: var(--color-success);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+        }
+        
+        .icon-large {
+            width: clamp(60px, 8vw, 100px);
+            height: clamp(60px, 8vw, 100px);
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(16px, 3vw, 32px);
+            max-width: 1000px;
+            width: 100%;
+        }
+        
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .timeline-item {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+        }
+        
+        .timeline-marker {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+        
+        .timeline-content {
+            flex: 1;
+        }
+        
+        .progress-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa);
+            transition: width 0.5s ease;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
+    
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <div class="presentation" id="presentation">
+        
+        <!-- Slide 1: 封面 -->
+        <div class="slide active" data-slide="0">
+            <p class="text-sm tracking-widest text-gray-500 mb-6 uppercase fade-in-up">KEYNOTE DARK V5.0</p>
+            <h1 class="hero-title fade-in-up delay-1">乔布斯风格演示</h1>
+            <p class="subtitle fade-in-up delay-2">大尺寸浮动光斑 · 渐变色背景 · 华丽视觉效果</p>
+            <div class="fade-in-up delay-3 mt-12 flex gap-4 flex-wrap justify-center">
+                <span class="tag tag-primary">居中对齐</span>
+                <span class="tag tag-secondary">卡片 hover</span>
+                <span class="tag tag-accent">标签边框</span>
+            </div>
+        </div>
+        
+        <!-- Slide 2: 特性 -->
+        <div class="slide" data-slide="1">
+            <p class="text-sm tracking-widest text-gray-500 mb-6 uppercase fade-in-up">// 核心特性</p>
+            <h2 class="section-title fade-in-up delay-1">v5.0 全新升级</h2>
+            <p class="subtitle fade-in-up delay-2">
+                基于<span class="highlight">之前效果</span>优化，实现更华丽的视觉体验
+            </p>
+            <div class="stat-grid fade-in-up delay-3 mt-8">
+                <div class="card stat-card wave">
+                    <p class="big-number">600px</p>
+                    <p class="text-gray-400 mt-2">光斑最大尺寸</p>
+                </div>
+                <div class="card stat-card wave">
+                    <p class="big-number">30px</p>
+                    <p class="text-gray-400 mt-2">浮动幅度</p>
+                </div>
+                <div class="card stat-card wave">
+                    <p class="big-number">3</p>
+                    <p class="text-gray-400 mt-2">浮动光斑</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 3: 流程 -->
+        <div class="slide" data-slide="2">
+            <p class="text-sm tracking-widest text-gray-500 mb-6 uppercase fade-in-up">// 实现流程</p>
+            <h2 class="section-title fade-in-up delay-1">优化步骤</h2>
+            <div class="process-flow fade-in-up delay-3 mt-8">
+                <div class="card process-step wave">
+                    <svg class="icon-large" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    <p class="text-lg font-bold">分析差异</p>
+                    <p class="text-sm text-gray-400">对比之前效果</p>
+                </div>
+                <svg class="process-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div class="card process-step wave">
+                    <svg class="icon-large" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    <p class="text-lg font-bold">优化代码</p>
+                    <p class="text-sm text-gray-400">更新 CSS 文件</p>
+                </div>
+                <svg class="process-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div class="card process-step wave">
+                    <svg class="icon-large" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <p class="text-lg font-bold">验证效果</p>
+                    <p class="text-sm text-gray-400">测试所有特性</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 4: 时间线 -->
+        <div class="slide" data-slide="3">
+            <p class="text-sm tracking-widest text-gray-500 mb-6 uppercase fade-in-up">// 更新日志</p>
+            <h2 class="section-title fade-in-up delay-1">版本演进</h2>
+            <div class="timeline fade-in-up delay-3 mt-8">
+                <div class="timeline-item">
+                    <div class="timeline-marker">1</div>
+                    <div class="timeline-content card">
+                        <p class="font-bold text-lg">v4.0 - 规范版本</p>
+                        <p class="text-gray-400 mt-2">按照 keynote-ppt-generator-v4 规范实现</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-marker">2</div>
+                    <div class="timeline-content card">
+                        <p class="font-bold text-lg">v5.0 - 华丽版本 <span class="tag tag-success ml-2">最新</span></p>
+                        <p class="text-gray-400 mt-2">大尺寸浮动光斑、渐变色背景、华丽视觉效果</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 5: 列表 -->
+        <div class="slide" data-slide="4">
+            <p class="text-sm tracking-widest text-gray-500 mb-6 uppercase fade-in-up">// 技术细节</p>
+            <h2 class="section-title fade-in-up delay-1">核心改进</h2>
+            <div class="comparison-grid fade-in-up delay-3 mt-8">
+                <div class="card">
+                    <h3 class="text-xl font-bold mb-4 text-blue-400">视觉效果</h3>
+                    <ul class="feature-list">
+                        <li>大尺寸浮动光斑（<span class="highlight">600px/500px/400px</span>）</li>
+                        <li>渐变色背景（linear-gradient）</li>
+                        <li>独立的背景层（.bg-gradient + .bg-blob）</li>
+                        <li>更大的浮动幅度（<span class="highlight-success">30px</span>）</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3 class="text-xl font-bold mb-4 text-purple-400">交互体验</h3>
+                    <ul class="feature-list">
+                        <li>内容居中对齐</li>
+                        <li>卡片 <span class="highlight-accent">hover 效果</span></li>
+                        <li>标签有边框</li>
+                        <li>feature-list 使用圆点</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 6: 结束页 -->
+        <div class="slide" data-slide="5">
+            <h1 class="hero-title fade-in-up delay-1">Thank You</h1>
+            <p class="subtitle fade-in-up delay-2 mt-8">
+                Keynote Dark v5.0 - 华丽、精致、完整
+            </p>
+            <div class="fade-in-up delay-3 mt-12">
+                <p class="text-gray-400 text-lg">Powered by PowerfulPPT</p>
+            </div>
+        </div>
+        
+    </div>
+    
+    <div class="nav-dots" id="navDots"></div>
+    
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const navDotsContainer = document.getElementById('navDots');
+        const progressBar = document.getElementById('progressBar');
+        let currentSlide = 0;
+        const totalSlides = slides.length;
+        
+        slides.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.className = `nav-dot ${index === 0 ? 'active' : ''}`;
+            dot.addEventListener('click', () => goToSlide(index));
+            navDotsContainer.appendChild(dot);
+        });
+        
+        const navDots = document.querySelectorAll('.nav-dot');
+        
+        function updateProgress() {
+            progressBar.style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
+        }
+        
+        function goToSlide(index) {
+            if (index < 0 || index >= slides.length) return;
+            if (index === currentSlide) return;
+            
+            const prevSlide = slides[currentSlide];
+            const nextSlideEl = slides[index];
+            
+            prevSlide.classList.remove('active');
+            prevSlide.classList.add('exiting');
+            navDots[currentSlide].classList.remove('active');
+            
+            currentSlide = index;
+            
+            setTimeout(() => {
+                prevSlide.classList.remove('exiting');
+            }, 600);
+            
+            nextSlideEl.classList.add('active');
+            navDots[currentSlide].classList.add('active');
+            updateProgress();
+            
+            const animatedElements = nextSlideEl.querySelectorAll('.fade-in-up');
+            animatedElements.forEach(el => {
+                el.style.animation = 'none';
+                el.offsetHeight;
+                el.style.animation = null;
+            });
+        }
+        
+        function nextSlide() {
+            goToSlide(currentSlide + 1);
+        }
+        
+        function prevSlide() {
+            goToSlide(currentSlide - 1);
+        }
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                goToSlide(0);
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                goToSlide(slides.length - 1);
+            }
+        });
+        
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
+                }
+            }
+        }
+        
+        document.addEventListener('wheel', (e) => {
+            if (Math.abs(e.deltaY) > 50) {
+                if (e.deltaY > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
+                }
+            }
+        }, { passive: true });
+        
+        updateProgress();
+    </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "powerful-ppt",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HTML Presentation Generator with PPTX export",
+  "scripts": {
+    "generate-previews": "node scripts/generate_previews.js",
+    "html-to-pptx": "node scripts/html-to-pptx.js"
+  },
+  "dependencies": {
+    "playwright": "^1.49.0",
+    "pptxgenjs": "^3.12.0",
+    "adm-zip": "^0.5.16"
+  }
+}

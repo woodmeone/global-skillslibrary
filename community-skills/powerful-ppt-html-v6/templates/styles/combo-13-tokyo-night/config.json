@@ -1,0 +1,16 @@
+{
+  "id": "combo-13", "name": "Tokyo Night", "name_cn": "东京夜色", "version": "1.0.0",
+  "best_for": ["Tech sharing", "Infrastructure", "DevOps", "Cold tech"],
+  "theme": "dark", "pptx_bg": "1a1b26", "chart_support": "svg+echarts",
+  "micro_interactions": ["neon-glow", "fade-up", "stagger-list"],
+  "css_variables": {
+    "--bg-primary": "#1a1b26", "--bg-secondary": "#16161e", "--bg-card": "#24283b",
+    "--accent-1": "#7aa2f7", "--accent-2": "#bb9af7", "--accent-3": "#7dcfff",
+    "--text-primary": "#c0caf5", "--text-secondary": "#a9b1d6", "--text-accent": "#7aa2f7",
+    "--radius": "12px", "--radius-lg": "20px",
+    "--chart-color-1": "#7aa2f7", "--chart-color-2": "#bb9af7", "--chart-color-3": "#7dcfff",
+    "--chart-color-4": "#9ece6a", "--chart-color-5": "#e0af68", "--chart-color-6": "#f7768e",
+    "--chart-text": "#c0caf5", "--chart-text-secondary": "#a9b1d6", "--chart-grid": "rgba(192,202,245,.12)", "--chart-bg": "transparent"
+  },
+  "includes": ["base.css", "effects.css", "components.css"]
+}

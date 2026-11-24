@@ -1,0 +1,115 @@
+{
+  "meta": {
+    "total_css_animations": 27,
+    "total_canvas_fx": 20,
+    "updated": "2026-04-16"
+  },
+  "css_animations": {
+    "directional_fades": {
+      "fade-up": { "class": "anim-fade-up", "effect": "Translate from +32px, fade", "use_for": "Default paragraph + card entry" },
+      "fade-down": { "class": "anim-fade-down", "effect": "Translate from -32px, fade", "use_for": "Headers, banners, callouts" },
+      "fade-left": { "class": "anim-fade-left", "effect": "Translate from -40px", "use_for": "Left column in two-column layout" },
+      "fade-right": { "class": "anim-fade-right", "effect": "Translate from +40px", "use_for": "Right column in two-column layout" }
+    },
+    "dramatic_entries": {
+      "rise-in": { "class": "anim-rise-in", "effect": "+60px rise + blur-off", "use_for": "Slide titles, hero headlines" },
+      "drop-in": { "class": "anim-drop-in", "effect": "-60px drop + slight scale", "use_for": "Banners, alert bars" },
+      "zoom-pop": { "class": "anim-zoom-pop", "effect": "Scale 0.6 → 1.04 → 1", "use_for": "Buttons, stat numbers, CTAs" },
+      "blur-in": { "class": "anim-blur-in", "effect": "18px blur clears", "use_for": "Cover page reveal" },
+      "glitch-in": { "class": "anim-glitch-in", "effect": "Clip-path steps + jitter", "use_for": "Tech / cyber / error states" }
+    },
+    "text_effects": {
+      "typewriter": { "class": "anim-typewriter", "effect": "Monospace-like type reveal", "use_for": "One-liners, slogans" },
+      "neon-glow": { "class": "anim-neon-glow", "effect": "Cyclic text-shadow pulse", "use_for": "Terminal-green / dark themes" },
+      "shimmer-sweep": { "class": "anim-shimmer-sweep", "effect": "White sheen passes across", "use_for": "Metallic buttons, premium cards" },
+      "gradient-flow": { "class": "anim-gradient-flow", "effect": "Infinite horizontal gradient slide", "use_for": "Brand wordmarks" }
+    },
+    "lists_numbers": {
+      "stagger-list": { "class": "anim-stagger-list", "effect": "Children rise-in one-by-one", "use_for": "Any <ul> or .grid" },
+      "counter-up": { "class": "counter", "effect": "Number ticks 0 → target", "use_for": "KPI, stat-highlight pages", "markup": "<span class=\"counter\" data-to=\"1248\">0</span>" }
+    },
+    "svg_geometry": {
+      "path-draw": { "class": "anim-path-draw", "effect": "Strokes draw themselves", "use_for": "Lines, arrows, diagrams" },
+      "morph-shape": { "class": "anim-morph-shape", "effect": "Path d morph", "use_for": "Background shapes" }
+    },
+    "3d_perspective": {
+      "parallax-tilt": { "class": "anim-parallax-tilt", "effect": "Hover → 3D tilt", "use_for": "Hero cards, product shots" },
+      "card-flip-3d": { "class": "anim-card-flip-3d", "effect": "Y-axis 90° flip", "use_for": "Before/after reveal" },
+      "cube-rotate-3d": { "class": "anim-cube-rotate-3d", "effect": "Rotate in from cube side", "use_for": "Section dividers" },
+      "page-turn-3d": { "class": "anim-page-turn-3d", "effect": "Left-hinge page turn", "use_for": "Editorial / story flows" },
+      "perspective-zoom": { "class": "anim-perspective-zoom", "effect": "Pull from -400 Z", "use_for": "Cover openings" }
+    },
+    "ambient_continuous": {
+      "marquee-scroll": { "class": "anim-marquee-scroll", "effect": "Infinite horizontal loop", "use_for": "Client logo strips" },
+      "kenburns": { "class": "anim-kenburns", "effect": "14s slow zoom on images", "use_for": "Hero backgrounds" },
+      "confetti-burst": { "class": "anim-confetti-burst", "effect": "Pseudo-element sparkle burst", "use_for": "Thanks / win pages" },
+      "spotlight": { "class": "anim-spotlight", "effect": "Circular clip-path reveal", "use_for": "Big reveal moments" },
+      "ripple-reveal": { "class": "anim-ripple-reveal", "effect": "Corner-origin ripple reveal", "use_for": "Section transitions" }
+    }
+  },
+  "canvas_fx": {
+    "celebration": {
+      "particle-burst": { "trigger": "<div data-fx=\"particle-burst\">", "effect": "Particles explode from center, gravity + fade, re-bursts every 2.5s", "use_for": "Reveal moments, stat pages" },
+      "confetti-cannon": { "trigger": "<div data-fx=\"confetti-cannon\">", "effect": "Colored rotating rects arcing from both bottom corners", "use_for": "Thank you / success pages" },
+      "firework": { "trigger": "<div data-fx=\"firework\">", "effect": "Rockets from bottom explode into colored sparks, continuous", "use_for": "Celebration, launch slides" }
+    },
+    "space_scifi": {
+      "starfield": { "trigger": "<div data-fx=\"starfield\">", "effect": "3D perspective starfield flying outward", "use_for": "Sci-fi / deep space backgrounds" },
+      "galaxy-swirl": { "trigger": "<div data-fx=\"galaxy-swirl\">", "effect": "Logarithmic spiral of ~800 particles, slow rotation", "use_for": "Cover pages, intros" },
+      "orbit-ring": { "trigger": "<div data-fx=\"orbit-ring\">", "effect": "5 concentric rings with dots at different speeds, radial glow", "use_for": "System / planet / layered concepts" }
+    },
+    "tech_data": {
+      "matrix-rain": { "trigger": "<div data-fx=\"matrix-rain\">", "effect": "Falling green katakana + hex columns", "use_for": "Cyber / security / data theme" },
+      "data-stream": { "trigger": "<div data-fx=\"data-stream\">", "effect": "Rows of scrolling hex/binary text, cyberpunk", "use_for": "Data, API, security" },
+      "knowledge-graph": { "trigger": "<div data-fx=\"knowledge-graph\">", "effect": "Force-directed graph, 28 labeled nodes, ~50 edges, live physics", "use_for": "Knowledge / RAG / graph slides" },
+      "neural-net": { "trigger": "<div data-fx=\"neural-net\">", "effect": "4-6-6-3 feedforward net with pulses traveling along edges", "use_for": "ML / model architecture slides" }
+    },
+    "ambient_decorative": {
+      "constellation": { "trigger": "<div data-fx=\"constellation\">", "effect": "Drifting points, linked when within 150px, opacity by distance", "use_for": "Ambient hero backgrounds" },
+      "gradient-blob": { "trigger": "<div data-fx=\"gradient-blob\">", "effect": "4 drifting blurred radial gradients (additive)", "use_for": "Soft hero backgrounds" },
+      "magnetic-field": { "trigger": "<div data-fx=\"magnetic-field\">", "effect": "Particles travel bezier/sin curves leaving trails", "use_for": "Energy / flow / abstract" }
+    },
+    "text_interactive": {
+      "word-cascade": { "trigger": "<div data-fx=\"word-cascade\">", "effect": "Words fall from top, pile up at bottom", "use_for": "Vocabulary / concept cloud slides" },
+      "letter-explode": { "trigger": "<div data-fx=\"letter-explode\" data-fx-text-value=\"EXPLODE\">", "effect": "Heading letters fly in from random directions, loops every ~4.5s", "use_for": "Big titles, hero text" },
+      "typewriter-multi": { "trigger": "<div data-fx=\"typewriter-multi\" data-fx-line1=\"> boot...\">", "effect": "3 lines typing concurrently with blinking block cursors (DOM)", "use_for": "Terminal, agent boot log" },
+      "counter-explosion": { "trigger": "<div data-fx=\"counter-explosion\" data-fx-to=\"2400\">", "effect": "Number counts 0 → target, bursts particles, resets after 4s", "use_for": "KPI reveal, record highs" }
+    },
+    "impact_flow": {
+      "chain-react": { "trigger": "<div data-fx=\"chain-react\">", "effect": "8 circles with a domino pulse wave traveling across", "use_for": "Pipeline / sequential flow" },
+      "shockwave": { "trigger": "<div data-fx=\"shockwave\">", "effect": "Expanding rings from center on loop", "use_for": "Impact, launch, alert" },
+      "sparkle-trail": { "trigger": "<div data-fx=\"sparkle-trail\">", "effect": "Pointer-driven sparkle emitter (auto-wiggles if idle)", "use_for": "Interactive reveal, hover canvases" }
+    }
+  },
+  "smart_recommendations": {
+    "slide_type_mapping": {
+      "cover": { "css": ["rise-in", "blur-in", "perspective-zoom"], "fx": ["galaxy-swirl", "constellation", "gradient-blob"] },
+      "content": { "css": ["fade-up", "stagger-list"], "fx": [] },
+      "cards": { "css": ["stagger-list", "card-flip-3d"], "fx": [] },
+      "steps": { "css": ["stagger-list", "fade-up"], "fx": ["chain-react"] },
+      "chart": { "css": ["fade-up", "zoom-pop"], "fx": ["counter-explosion"] },
+      "list": { "css": ["stagger-list", "fade-left"], "fx": [] },
+      "ending": { "css": ["confetti-burst", "fade-up"], "fx": ["confetti-cannon", "firework"] },
+      "quote": { "css": ["fade-up", "blur-in"], "fx": [] },
+      "comparison": { "css": ["fade-left", "fade-right"], "fx": [] },
+      "timeline": { "css": ["stagger-list", "path-draw"], "fx": [] },
+      "section-divider": { "css": ["cube-rotate-3d", "perspective-zoom", "ripple-reveal"], "fx": ["shockwave"] },
+      "kpi": { "css": ["counter-up", "zoom-pop"], "fx": ["counter-explosion", "particle-burst"] }
+    },
+    "style_theme_mapping": {
+      "dark_tech": { "fx": ["matrix-rain", "data-stream", "neural-net", "starfield"], "css": ["glitch-in", "neon-glow"] },
+      "dark_premium": { "fx": ["constellation", "gradient-blob", "galaxy-swirl"], "css": ["blur-in", "gradient-flow"] },
+      "light_minimal": { "fx": [], "css": ["fade-up", "stagger-list", "rise-in"] },
+      "light_creative": { "fx": ["sparkle-trail", "particle-burst"], "css": ["zoom-pop", "shimmer-sweep"] },
+      "light_business": { "fx": [], "css": ["fade-up", "counter-up", "stagger-list"] },
+      "cyberpunk": { "fx": ["matrix-rain", "data-stream", "letter-explode"], "css": ["glitch-in", "neon-glow", "typewriter"] }
+    },
+    "content_type_mapping": {
+      "data_metrics": { "css": ["counter-up", "zoom-pop"], "fx": ["counter-explosion", "particle-burst"] },
+      "architecture": { "css": ["path-draw", "fade-up"], "fx": ["knowledge-graph", "neural-net"] },
+      "process_flow": { "css": ["stagger-list", "path-draw"], "fx": ["chain-react"] },
+      "celebration": { "css": ["confetti-burst"], "fx": ["confetti-cannon", "firework"] },
+      "storytelling": { "css": ["page-turn-3d", "fade-left", "fade-right"], "fx": [] }
+    }
+  }
+}

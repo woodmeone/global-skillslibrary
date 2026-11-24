@@ -7,7 +7,7 @@
 
 ---
 
-## 一、本库直接收录（19 个）
+## 一、本库直接收录（20 个）
 
 clone 本仓即得，无需额外操作。
 
@@ -54,6 +54,12 @@ clone 本仓即得，无需额外操作。
 | 技能 | 路径 | 干什么 |
 |---|---|---|
 | `lead-learn` | `lead-learn` | 收藏夹 → 各角色长期内容：增量抓取 → 字幕/转录/抽帧 → 判给谁 → 派单。**派单落在工作区，不绑定记忆系统** |
+
+### 代码理解 / 文档产出
+
+| 技能 | 路径 | 干什么 |
+|---|---|---|
+| `codebase-walkthrough` | `community-skills/codebase-walkthrough` | 读懂陌生项目 → 两个 HTML：可下钻链路图 + 图文讲解。元素抽象 + 链路编排 + 验证；多场景案例走遍每个分支，边覆盖率为计算值 |
 
 ---
 
@@ -108,9 +114,10 @@ $SK = "$env:USERPROFILE\.dsh\skills"
 $LIB = "D:\Project\globalSkills-library"
 
 # 本库直接收录的
-New-Item -ItemType Junction -Path "$SK\media-downloader"  -Target "$LIB\media-downloader"
-New-Item -ItemType Junction -Path "$SK\product-manual"    -Target "$LIB\product-manual"
-New-Item -ItemType Junction -Path "$SK\lead-learn"        -Target "$LIB\lead-learn"
+New-Item -ItemType Junction -Path "$SK\media-downloader"         -Target "$LIB\media-downloader"
+New-Item -ItemType Junction -Path "$SK\product-manual"           -Target "$LIB\product-manual"
+New-Item -ItemType Junction -Path "$SK\lead-learn"               -Target "$LIB\lead-learn"
+New-Item -ItemType Junction -Path "$SK\codebase-walkthrough"     -Target "$LIB\community-skills\codebase-walkthrough"
 Get-ChildItem "$LIB\community-skills" -Directory | ForEach-Object {
     New-Item -ItemType Junction -Path "$SK\$($_.Name)" -Target $_.FullName
 }
@@ -131,7 +138,7 @@ python "$env:USERPROFILE\.dsh\skills\recall\scripts\download_bge_m3.py"
 ## 五、给新环境的自检
 
 ```powershell
-# 技能数对不对（本库直接收录应为 19 + 外部 2 = 21 条软链（mattpocock 是子目录批，不单列））
+# 技能数对不对（本库直接收录应为 20 + 外部 2 = 22 条软链（mattpocock 是子目录批，不单列））
 (Get-ChildItem "$env:USERPROFILE\.dsh\skills" -Directory | Where-Object LinkType).Count
 
 # recall 能不能跑（模型在不在）
@@ -155,6 +162,6 @@ python "$env:USERPROFILE\.dsh\skills\lead-learn\scripts\dispatch.py" status
 ## 七、时间戳
 
 - 建立：2026-11-24
-- 本库收录：19 个技能
+- 本库收录：20 个技能
 - 外部仓库：3 个（MidNight / git-native-sop / mattpocock-skills）
 - 排除：模型权重 2161 MB、`node_modules`、`.venv`、`_backup`

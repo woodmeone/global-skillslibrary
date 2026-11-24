@@ -1,0 +1,115 @@
+{
+  "title": "<page title>",
+  "sub": "<one line: what this page explains>",
+  "root": "overview",
+
+  "diagrams": {
+    "overview": {
+      "title": "<top-level diagram title>",
+      "sub": "<one line under the diagram title>",
+      "crumb": "总图",
+      "w": 1200,
+      "h": 520,
+
+      "bounds": [
+        { "x": 240, "y": 120, "w": 760, "h": 340, "label": "<optional dashed boundary label>" }
+      ],
+
+      "nodes": [
+        {
+          "id": "n1",
+          "x": 40, "y": 160, "w": 220, "h": 110,
+          "title": "<element name, business words>",
+          "lines": ["<one supporting line>"],
+          "drill": "n1-inside",
+          "tip": "<why this element exists / what breaks without it>"
+        },
+        {
+          "id": "n2",
+          "x": 340, "y": 160, "w": 220, "h": 110,
+          "title": "<terminal element>",
+          "lines": ["<supporting line>"],
+          "tip": "<why it exists>"
+        },
+        {
+          "id": "n3",
+          "x": 640, "y": 160, "w": 220, "h": 110,
+          "title": "<element with code attached>",
+          "lines": ["<supporting line>"],
+          "ref": "<repo/relative/path.ext>@<line>@<distinctive token on that line>"
+        }
+      ],
+
+      "edges": [
+        {
+          "from": "n1", "to": "n2",
+          "fs": "r", "ts": "l",
+          "label": "<the payload that crosses this arrow>"
+        },
+        {
+          "from": "n2", "to": "n3",
+          "fs": "r", "ts": "l",
+          "label": "<payload>",
+          "refs": ["<repo/relative/path.ext>@<line>@<token>"]
+        }
+      ]
+    },
+
+    "n1-inside": {
+      "title": "<inside the first element>",
+      "parent": "overview",
+      "crumb": "<breadcrumb label>",
+      "w": 900,
+      "h": 340,
+      "nodes": [
+        { "id": "s1", "x": 60, "y": 120, "w": 220, "h": 100, "title": "<internal step>", "lines": ["<detail>"] },
+        { "id": "s2", "x": 360, "y": 120, "w": 220, "h": 100, "title": "<next step>", "lines": ["<detail>"] }
+      ],
+      "edges": [
+        { "from": "s1", "to": "s2", "fs": "r", "ts": "l", "label": "<payload between them>" }
+      ]
+    }
+  },
+
+  "story": [
+    {
+      "beat": "<Day 1 · a named person does something>",
+      "node": "n1",
+      "text": "<what happens, which payload crosses, and why it is hard>"
+    },
+    {
+      "beat": "<Day 2 · the system refuses something>",
+      "node": "n2",
+      "text": "<the refusal is usually the most informative beat — say what it declines and what it says instead>"
+    }
+  ],
+
+  "sections": {
+    "n1": {
+      "name": "<node title>",
+      "meta": "<file:line — optional>",
+      "what": "<what it is, in business words>",
+      "why": "<the failure that happens without it — never 'for UX'>",
+      "for": "<what the next node or the user gets>",
+      "how": "<In: … Out: … — name the actual payloads>",
+      "trap": "<the specific failure this node exists to prevent>",
+      "refs": [
+        {
+          "label": "<short label for the code panel>",
+          "path": "<repo/relative/path.ext>",
+          "line": 42,
+          "snippet": [
+            { "n": 42, "text": "<exact source line>", "hit": true }
+          ]
+        }
+      ]
+    },
+    "n2": {
+      "name": "<node title>",
+      "what": "<…>",
+      "why": "<…>",
+      "for": "<…>",
+      "how": "<…>"
+    }
+  }
+}

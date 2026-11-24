@@ -159,5 +159,72 @@ def test_cross_check_ok_when_same(env, monkeypatch, tmp_path):
     assert cc.check_bili_uid_binding(prof) == []
 
 
+# ---- 运行时校验（bili_grab3.check_uid_match）-----------------------------
+#
+# 这两条锁住「两层校验不重复、但都生效」：配置层来自 cc_config，
+# 运行时层来自导出的 cookie。合并前两处各写一遍，容易漂移。
+
+
+def _load_grab(monkeypatch, tmp_path, uid, cookie_ids=None):
+    """加载 bili_grab3，把 OUT/COOKIE_JSON/UID 指到 tmp，不发网络。"""
+    reload_paths(monkeypatch, tmp_path, {"home": str(tmp_path)})
+    monkeypatch.setenv("BILI_UID", uid)
+
+    out = tmp_path / ".favorites-out"
+    out.mkdir(parents=True, exist_ok=True)
+    cj = out / "bilibili-cookies.json"
+    if cookie_ids is not None:
+        cj.write_text(json.dumps(
+            [{"name": "DedeUserID", "value": v, "domain": ".bilibili.com"}
+             for v in cookie_ids] +
+            [{"name": "SESSDATA", "value": "x", "domain": ".bilibili.com"}]
+        ), encoding="utf-8")
+
+    for mod in ("paths", "cc_config", "bili_grab3"):
+        sys.modules.pop(mod, None)
+    import importlib
+    import paths
+    importlib.reload(paths)
+    # 覆盖 paths 里的产物路径到 tmp
+    paths.OUT = out
+    paths.BILI_COOKIES_JSON = cj
+    import cc_config
+    importlib.reload(cc_config)
+    import bili_grab3
+    importlib.reload(bili_grab3)
+    # reload 会从 paths 再取一次，这里再钉一次防止落回真实盘
+    bili_grab3.COOKIE_JSON = cj
+    bili_grab3.UID = uid
+    return bili_grab3
+
+
+def test_runtime_check_ok(env, monkeypatch, tmp_path):
+    g = _load_grab(monkeypatch, tmp_path, "1234567890", ["1234567890"])
+    assert g.check_uid_match() == []
+
+
+def test_runtime_check_detects_wrong_account(env, monkeypatch, tmp_path):
+    """cookie 是别人的号 → 必须报，这是防「抓错人」的最后一道。"""
+    g = _load_grab(monkeypatch, tmp_path, "1234567890", ["9876543210987654"])
+    warns = g.check_uid_match()
+    assert warns, "cookie 与 UID 不同号却没报"
+    assert any("别人的收藏夹" in w for w in warns)
+
+
+def test_runtime_check_missing_dedeuserid(env, monkeypatch, tmp_path):
+    """没有 DedeUserID = 未登录态，要提示而不是静默。"""
+    g = _load_grab(monkeypatch, tmp_path, "1234567890", [])
+    warns = g.check_uid_match()
+    assert any("未登录" in w for w in warns)
+
+
+def test_runtime_check_does_not_double_report_missing_uid(env, monkeypatch, tmp_path):
+    """没配 UID 时只由配置层报一次，运行时层不重复。"""
+    g = _load_grab(monkeypatch, tmp_path, "", ["1234567890"])
+    warns = g.check_uid_match()
+    # 配置层会报「没配 BILI_UID」，但不许出现两条一样的
+    assert len([w for w in warns if "没配 BILI_UID" in w]) <= 1
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "-q"]))

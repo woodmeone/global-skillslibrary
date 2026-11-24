@@ -49,7 +49,29 @@ from paths import CC_CONF
 # CookieCloud 服务端只把 uuid 当目录名，查不到就 404，不挑形状。
 # 所以这里只判「有没有填」，形状交给服务端回答（404 就是没同步过）。
 # 占位值。填了这些等于没填，必须当「未配置」处理而不是拿去请求服务端。
-_PLACEHOLDER_HINTS = ("todo", "填这里", "changeme", "your-", "<", "占位")
+#
+# ⚠ **只匹配前缀，不做子串匹配。**
+# 子串匹配会把合法凭据误伤成「没填」：实测 `a<b>C9!xyz`、`PassTODOword9`
+# 都被拦下，而它们是完全合法的密码。这和「不校验 uuid 形状」是同一条教训
+# ——校验越狠，误伤越重。占位值有它的固定长相（模板抄下来没改），
+# 所以只在前缀上认。
+_PLACEHOLDER_PREFIXES = (
+    "todo",          # TODO-在Chrome扩展里生成后填这里
+    "<your",         # <your-domain> / <你的域名>
+    "<你的",
+    "填这里",
+    "changeme",
+    "your-",
+    "<",             # 任何以尖括号开头的都是模板残渣
+    "占位",
+)
+
+# host 里不该出现的东西——出现即说明还是模板原样。
+#
+# 只放「抄模板留下的残渣」，不放 example.com：本文件的示例文案与文档
+# 都用 `https://cc.example.com` 举形状，把它判成占位就等于自己的示例不可用。
+# 模板里真正会残留的是尖括号包着的 `<your-domain>`，那个由 `<` / `>` 兜住。
+_HOST_PLACEHOLDER_HINTS = ("<", ">", "your-domain", "你的域名")
 
 # 「可疑形状」——只提醒，不拦。
 _LOOKS_STANDARD_UUID = re.compile(
@@ -75,14 +97,36 @@ class Profile:
     # --- 判定 ---------------------------------------------------------------
 
     def is_filled(self) -> bool:
-        """uuid/password 都是真值，不是占位符。"""
+        """uuid/password 都填了真值，不是模板残渣。
+
+        只认前缀（见 _PLACEHOLDER_PREFIXES 的注释），
+        免得密码里恰好含 `<` 或 `todo` 就永远存不进去。
+        """
         for v in (self.uuid, self.password):
             low = (v or "").strip().lower()
             if not low:
                 return False
-            if any(h in low for h in _PLACEHOLDER_HINTS):
+            if low.startswith(_PLACEHOLDER_PREFIXES):
                 return False
         return True
+
+    def host_problem(self) -> str:
+        """host 的毛病，空字符串表示没问题。
+
+        **host 也参与占位判定。** 早先只查了 uuid/password，于是把文档模板
+        原样抄下来（host 还是 `https://<your-domain>`）、只填了 uuid/password
+        的配置会被判定为「已配置」，然后拿这个不存在的域名去请求，
+        最后被误诊成「服务端挂了」。
+        """
+        h = (self.host or "").strip()
+        if not h:
+            return "缺 host（服务器地址，形如 https://cc.example.com）"
+        low = h.lower()
+        if any(k in low for k in _HOST_PLACEHOLDER_HINTS):
+            return f"host 还是模板占位值（{h}），要填真实服务器地址"
+        if "://" not in h:
+            return f"host 要以 http:// 或 https:// 开头（当前 {h}）"
+        return ""
 
     def problems(self) -> list[str]:
         """返回这份 profile 的【致命】毛病，空列表表示可用。
@@ -91,18 +135,23 @@ class Profile:
         服务端把 uuid 当目录名，什么形状都收，拦住合法值是纯误伤。
         """
         out: list[str] = []
-        if not self.host.strip():
-            out.append("缺 host（服务器地址，形如 https://cc.example.com）")
+        hp = self.host_problem()
+        if hp:
+            out.append(hp)
         if not self.is_filled():
             out.append("uuid / password 还是占位值，没填真凭据")
         return out
 
     def warnings(self) -> list[str]:
-        """非致命提醒。不拦执行，只说明「这看着不太常见」。"""
+        """非致命提醒。不拦执行，只说明「这看着不太常见」。
+
+        **不打 uuid 片段**：短 uuid 的前几位可能就是全文。
+        只给长度——和 masked() 同一口径。
+        """
         out: list[str] = []
         u = self.uuid.strip()
         if u and not _LOOKS_STANDARD_UUID.match(u):
-            out.append(f"uuid 不是标准 UUID 形状（{u[:10]}…）——合法，只是不常见")
+            out.append(f"uuid 不是标准 UUID 形状（{len(u)} 位）——合法，只是不常见")
         return out
 
     # --- 派生 ---------------------------------------------------------------
@@ -112,16 +161,31 @@ class Profile:
         raw = f"{self.uuid}-{self.password}"
         return hashlib.md5(raw.encode()).hexdigest()[:16]
 
+    def safe_uuid(self) -> str:
+        """可以进日志的 uuid 形式。**任何脚本要打 uuid 都用这个。**
+
+        规则：**只给长度，一个字符都不给。**
+
+        为什么连「前 6 位」也不给：uuid 是 CookieCloud 的账号键（服务端路径
+        就是 `/get/<uuid>`），泄露前缀等于缩小爆破空间；而日志会被贴进对话、
+        issue、git。6 位对「区分是哪份 profile」没有帮助——`masked()` 已经
+        打了 profile 名字，那才是给人区分的字段。
+
+        收敛成一个方法，是因为 `uid[:8]` 这种写法散在各处时总有地方会漏。
+        """
+        u = (self.uuid or "").strip()
+        if not u:
+            return "<未填>"
+        return f"<{len(u)}位，已隐去>"
+
     def masked(self) -> str:
-        """给人看的一行。**不露任何密码字符**。
+        """给人看的一行。**不露密码或 uuid 的任何可用字符**。
 
         哪怕只是尾 4 位也不露：短密码（比如 "edge"）的尾 4 位就是全文，
         而日志会被贴进对话、写进 issue、进 git —— 那就是泄露。
-        uuid 同样只留「能区分是谁」的最短前缀。
         """
-        uid = self.uuid or ""
         return (f"{self.name}  host={self.host}  "
-                f"uuid={uid[:8]}…  "
+                f"uuid={self.safe_uuid()}  "
                 f"pw=<{len(self.password)}位，已隐去>  "
                 f"platforms={','.join(self.platforms) or '-'}"
                 f"{'  [preferred]' if self.preferred else ''}")
@@ -152,7 +216,7 @@ def _raw(path: Path | None = None) -> dict:
         )
     try:
         # PowerShell 写的 JSON 带 BOM，必须 utf-8-sig
-        return json.loads(p.read_text(encoding="utf-8-sig"))
+        data = json.loads(p.read_text(encoding="utf-8-sig"))
     except json.JSONDecodeError as exc:
         raise CCConfigError(
             f"凭据文件不是合法 JSON：{p}\n"
@@ -160,6 +224,15 @@ def _raw(path: Path | None = None) -> dict:
             f"  怎么办：检查是不是少逗号/多了尾逗号；也可以从 "
             f"cookiecloud.bak-*.json 恢复。"
         ) from exc
+    # 根节点必须是对象。否则后面 raw.get(...) 会抛 AttributeError，
+    # 而 cc_fetch.main() 只捕 CCConfigError/RuntimeError，用户看到的是裸 traceback。
+    if not isinstance(data, dict):
+        raise CCConfigError(
+            f"凭据文件根节点必须是 JSON 对象，实际是 {type(data).__name__}：{p}\n"
+            f"  怎么办：检查文件是不是被写成了数组或 null；"
+            f"可以从 cookiecloud.bak-*.json 恢复。"
+        )
+    return data
 
 
 def _from_flat(raw: dict) -> list[Profile]:
@@ -179,9 +252,13 @@ def load_profiles(path: Path | None = None) -> list[Profile]:
     raw = _raw(path)
     if isinstance(raw.get("profiles"), list):
         out: list[Profile] = []
+        skipped = 0
         for i, item in enumerate(raw["profiles"]):
             if not isinstance(item, dict):
+                skipped += 1
                 continue
+            # preferred 只认 JSON 的 true。`"false"`（字符串）是手写配置里
+            # 极常见的错误，bool("false") == True 会把它当成默认账号选中。
             out.append(Profile(
                 name=str(item.get("name") or f"profile-{i}"),
                 host=str(item.get("host") or ""),
@@ -189,12 +266,24 @@ def load_profiles(path: Path | None = None) -> list[Profile]:
                 password=str(item.get("password") or ""),
                 account=str(item.get("account") or ""),
                 platforms=[str(x) for x in (item.get("platforms") or [])],
-                preferred=bool(item.get("preferred")),
+                preferred=item.get("preferred") is True,
             ))
         if not out:
+            hint = f"（其中 {skipped} 项不是对象，已跳过）" if skipped else ""
             raise CCConfigError(
-                f"{path or CC_CONF} 里 profiles 是空数组。\n"
+                f"{path or CC_CONF} 里 profiles 是空数组{hint}。\n"
                 f"  怎么办：至少填一份，或改回扁平写法 {{host,uuid,password}}。"
+            )
+        # 重名必须拦。放过去会怎样：set_credentials 按名字把所有同名项都置
+        # preferred=True → 写盘 → 之后任何 select() 都报「2 份都标了 preferred」，
+        # 用户从此只能手改文件。篡改发生在写盘之后，是真实的「写坏配置」路径。
+        names = [p.name for p in out]
+        dups = sorted({n for n in names if names.count(n) > 1})
+        if dups:
+            raise CCConfigError(
+                f"{path or CC_CONF} 里有重名 profile：{dups}\n"
+                f"  怎么办：给每个 name 起唯一的名字。"
+                f"（重名会让 preferred 同时命中多份，配置直接不可用）"
             )
         return out
     # 扁平旧格式
@@ -219,13 +308,31 @@ def select(name: str | None = None, path: Path | None = None) -> Profile:
     profiles = load_profiles(path)
     want = (name or os.environ.get("LEAD_LEARN_CC_PROFILE", "")).strip()
 
+    # 环境变量给了名字，但它不在**这次指定的文件**里 → 不要静默忽略，
+    # 也不要当成「文件坏了」。这是两处配置打架，必须说清楚。
+    if want and not any(p.name == want for p in profiles):
+        raise CCConfigError(
+            f"环境变量 LEAD_LEARN_CC_PROFILE={want!r}，但 "
+            f"{path or CC_CONF} 里没有这个名字。现有：{[p.name for p in profiles]}\n"
+            f"  怎么办：把两处改成一致，或清掉这个环境变量。"
+        )
+
     if not want:
-        # 第二来源：用户级配置里的 cc_profile（paths.py 已解析好）
-        try:
-            import paths
-            want = (getattr(paths, "CC_PROFILE", "") or "").strip()
-        except Exception:
-            want = ""
+        # 第二来源：用户级配置里的 cc_profile（paths.py 已解析好）。
+        # 只在没显式传 path 时才看它——传了 path 就是在问「按这个文件选」，
+        # 再掺进用户配置里的 cc_profile 会让「读另一份文件」的调用直接报错。
+        if path is None:
+            try:
+                import paths
+                want = (getattr(paths, "CC_PROFILE", "") or "").strip()
+            except Exception:
+                want = ""
+            if want and not any(p.name == want for p in profiles):
+                raise CCConfigError(
+                    f"~/.lead-learn/config.json 的 cc_profile={want!r}，但 "
+                    f"{CC_CONF} 里没有这个名字。现有：{[p.name for p in profiles]}\n"
+                    f"  怎么办：把 cc_profile 改成现存的某个名字，或补上那份 profile。"
+                )
 
     if want:
         for p in profiles:
@@ -337,13 +444,23 @@ def set_credentials(
     host: str | None = None,
     path: Path | None = None,
     make_preferred: bool = True,
+    verify_remote: bool = True,
 ) -> Profile:
     """改某份 profile 的凭据，写回原文件，保留其余字段与注释。
 
-    只动传进来的字段；传 None 的一律保持不变。写完立刻回读校验，
-    避免「写进去一个空格」这种事后才发现的问题。
+    只动传进来的字段；传 None 的一律保持不变。
 
-    写之前备份一份带时间戳的 .bak，凭据写错就靠它。
+    写盘前做两道验证，任一不过就**一个字节都不写**：
+      1. 本地：字段不为占位值、host 形状像样（`problems()`）
+      2. 远端：新口令真能解开服务端那份密文（`_verify_remote`）
+         —— 因为「语法合法的错口令」本地查不出来，而它会在下次抓取时才炸
+
+    写盘方式：先写 `.tmp` → 回读校验 → `os.replace` 原子替换。
+    原文件始终是完整可用的旧版本，直到新内容确认无误。
+
+    替换前备份一份带时间戳的 `.bak`。
+
+    verify_remote=False 用于离线改配置或测试；生产路径不要关掉它。
     """
     p = Path(path) if path else CC_CONF
     raw = _raw(p)
@@ -370,39 +487,96 @@ def set_credentials(
             "\n  怎么办：uuid/password 抄扩展设置页里的原值，一字不差（形状不限）。"
         )
 
+    # ---- 服务端预验证：新口令真能解开服务端那份密文吗？----
+    #
+    # 只有「本地回读一致」是不够的：把一个语法合法、但服务端解不开的口令写进
+    # 配置，函数会返回成功，而用户下次抓取时才炸——那正是 Issue 背景第 4 条
+    # （改密码后旧配置解不开）发生的场景。所以在落盘前先探一次。
+    #
+    # 做成可选：verify_remote=False 时不联网（测试/离线改配置用），
+    # 但**默认必须验证**——凭据写错是静默故障，代价远大于一次 GET。
+    remote_note = ""
+    if verify_remote:
+        remote_note = _verify_remote(target)
+
     if make_preferred:
         for x in profiles:
             x.preferred = (x.name == name)
         target.preferred = True
 
-    # 备份
+    if isinstance(raw.get("profiles"), list):
+        # 保住 _README / _说明 这类非 profile 字段，只替换 profiles 数组
+        raw["profiles"] = [x.as_dict() for x in profiles]
+    else:
+        # 扁平格式：退化成单 profile，仍写成扁平，免得老脚本看不懂。
+        # **保留原有全部键**，只覆盖这三个——早先用白名单只留 account，
+        # 结果 platforms/_note 等字段读写一轮就静默消失。
+        raw["host"] = profiles[0].host
+        raw["uuid"] = profiles[0].uuid
+        raw["password"] = profiles[0].password
+        if profiles[0].account:
+            raw["account"] = profiles[0].account
+
+    new_text = json.dumps(raw, ensure_ascii=False, indent=2) + "\n"
+
+    # ---- 先写临时文件并校验，通过了才原子替换 ----
+    #
+    # 早先是「直接写盘 → 回读 → 不一致再抛错」，可那时盘已经被写脏了。
+    # 典型触发：同名 profile 让 preferred 同时命中多份，写盘后 select() 永久报错。
+    tmp = p.with_suffix(p.suffix + ".tmp")
+    tmp.write_text(new_text, encoding="utf-8")
+    try:
+        back = select(name, path=tmp)
+        if back.uuid != target.uuid or back.password != target.password:
+            raise CCConfigError(f"临时文件回读不一致，未替换原文件：{p}")
+    except CCConfigError:
+        tmp.unlink(missing_ok=True)
+        raise
+
+    # 备份（在确认新内容可用之后才动原文件）
     if p.exists():
         import time
         bak = p.with_name(f"{p.stem}.bak-{time.strftime('%Y%m%d-%H%M%S')}{p.suffix}")
         bak.write_text(p.read_text(encoding="utf-8-sig"), encoding="utf-8")
 
-    if isinstance(raw.get("profiles"), list):
-        # 保住 _README / _说明 这类非 profile 字段，只替换 profiles 数组
-        raw["profiles"] = [x.as_dict() for x in profiles]
-    else:
-        # 扁平格式：退化成单 profile，仍写成扁平，免得老脚本看不懂
-        one = profiles[0]
-        raw = {k: v for k, v in raw.items() if k in ("account",)}
-        raw.update({
-            "host": one.host,
-            "uuid": one.uuid,
-            "password": one.password,
-        })
-        if one.account:
-            raw["account"] = one.account
+    os.replace(tmp, p)
+    if remote_note:
+        print(f"  {remote_note}")
+    return select(name, path=p)
 
-    p.write_text(json.dumps(raw, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
-    # 回读校验
-    back = select(name, path=p)
-    if back.uuid != target.uuid or back.password != target.password:
-        raise CCConfigError(f"写回后回读不一致，检查 {p}")
-    return back
+def _verify_remote(prof: Profile) -> str:
+    """确认 prof 的凭据能解开服务端数据。返回一句人话说明结果。
+
+    失败就抛错——**不允许**把解不开的凭据写进配置。
+    """
+    import cc_crypto
+
+    try:
+        payload = cc_crypto.fetch_payload(prof.host, prof.uuid, prof.password)
+    except LookupError as exc:
+        # 404 / 无 encrypted：服务端还没有这个 uuid 的数据。
+        # 这不代表凭据错了（新账号首次配置就是这种状态），放行但明说。
+        raise CCConfigError(
+            f"无法在服务端验证新凭据，**没有写入**：\n  {exc}\n"
+            f"  如果这是刚建的新账号，先在扩展里同步一次，再改配置。"
+        ) from None
+    except PermissionError as exc:
+        raise CCConfigError(
+            f"新口令解不开服务端数据，**没有写入**：\n  {exc}\n"
+            f"  配置里的旧值没动，可以从 cookiecloud.bak-*.json 对照。"
+        ) from None
+    except Exception as exc:
+        raise CCConfigError(
+            f"连不上服务端，**没有写入**：{type(exc).__name__}: {str(exc)[:120]}\n"
+            f"  怎么办：确认网络/代理，或显式传 verify_remote=False 跳过验证。"
+        ) from None
+
+    groups = (payload.get("cookie_data") or {})
+    if not groups:
+        return "⚠ 服务端能解密，但里面没有 cookie_data —— 扩展可能还没同步内容"
+    detail = ", ".join(f"{k}:{len(v)}" for k, v in groups.items())
+    return f"✓ 服务端验证通过（{detail}）"
 
 
 if __name__ == "__main__":

@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import asyncio
 import json
-import os
 import sys
 from pathlib import Path
 
@@ -32,12 +31,27 @@ def log(m: str) -> None:
 
 
 def check_uid_match() -> list[str]:
-    """核对 cookie 里的 DedeUserID 与配置的 BILI_UID 是不是同一个人。
+    """核对「cookie 里是谁」与「配置要抓谁」是否同一个账号。
 
-    用导出的 bilibili-cookies.json 里的 DedeUserID 字段，不额外发请求。
-    返回警告列表；一致或没有该字段时返回空。
+    两层，各有出处，不重复实现：
+
+      1. 配置层：cc_profile 与 bili_uid_by_profile 是否自洽
+         → 直接复用 cc_config.check_bili_uid_binding()，那边是唯一出处
+      2. 运行时层：导出的 cookie 里 DedeUserID 与 BILI_UID 是否一致
+         → 只有这里能做（需要读 cookie），用的是已导出的 json，不发请求
+
+    返回警告列表；全一致时为空。
     """
     out: list[str] = []
+
+    # 第一层：配置自洽（唯一出处是 cc_config）
+    try:
+        import cc_config
+        out.extend(cc_config.check_bili_uid_binding())
+    except Exception:
+        pass
+
+    # 第二层：实际 cookie
     if not COOKIE_JSON.exists():
         return out
     try:
@@ -51,7 +65,7 @@ def check_uid_match() -> list[str]:
         out.append("cookie 里没有 DedeUserID —— 大概是未登录态")
         return out
     if not UID:
-        out.append("没配 BILI_UID，抓不了收藏夹（见 ~/.lead-learn/config.json）")
+        # 配置层已经报过「没配 BILI_UID」，这里不再重复
         return out
     if UID not in ids:
         out.append(

@@ -4,8 +4,10 @@
   持久化 profile 的登录态会过期。CookieCloud 由浏览器扩展定时上传，
   我们从服务端拉最新的一份，pipeline 就不依赖「本地浏览器还登着」。
 
-凭据怎么读**不在这里决定**——全部交给 cc_config.py。本文件只关心
-「拿一份已经校验过、肯定能用的 profile，然后请求服务端」。
+三层分工，依赖单向（本文件 → cc_config → cc_crypto）：
+  cc_crypto.py   纯加解密 + HTTP，不认识配置
+  cc_config.py   凭据解析与校验，不认识 cookie 格式
+  本文件          取数 + 转 Netscape / Playwright 格式
 
 用法：
     python cc_fetch.py show                       # 看有哪些域名、多少 cookie
@@ -16,82 +18,27 @@
 
 from __future__ import annotations
 
-import base64
-import hashlib
 import json
 import sys
 
 from paths import OUT as OUT_DIR
 import cc_config
-
-
-# ---- 加解密 ---------------------------------------------------------------
-
-def evp_bytes_to_key(password: bytes, salt: bytes, key_len: int, iv_len: int) -> tuple[bytes, bytes]:
-    derived = b""
-    prev = b""
-    while len(derived) < key_len + iv_len:
-        prev = hashlib.md5(prev + password + salt).digest()
-        derived += prev
-    return derived[:key_len], derived[key_len:key_len + iv_len]
-
-
-def decrypt(key_pass: str, ciphertext_b64: str) -> dict:
-    from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-
-    raw = base64.b64decode(ciphertext_b64)
-    if not raw.startswith(b"Salted__"):
-        raise ValueError("非 CryptoJS 格式（缺 Salted__ 前缀）")
-    salt, body = raw[8:16], raw[16:]
-    key, iv = evp_bytes_to_key(key_pass.encode(), salt, 32, 16)
-    d = Cipher(algorithms.AES(key), modes.CBC(iv)).decryptor()
-    plain = d.update(body) + d.finalize()
-    pad = plain[-1]
-    if 1 <= pad <= 16:
-        plain = plain[:-pad]
-    return json.loads(plain.decode("utf-8"))
+import cc_crypto
 
 
 # ---- 取数 -----------------------------------------------------------------
 
 def fetch_payload(profile: str | None = None) -> dict:
-    """拉一份并解密。profile 名字可指定，缺省走 cc_config 的默认选择。"""
+    """拉一份并解密。profile 名字可指定，缺省走 cc_config 的默认选择。
+
+    加解密本身在 cc_crypto 里——这里只负责「先选账号，再取数」。
+    """
     prof = cc_config.select(profile)
-    st, body = _get(f"{prof.host.rstrip('/')}/get/{prof.uuid}")
-    if st == 404:
-        raise RuntimeError(
-            f"服务端没有这个 uuid 的数据（404）：{prof.name} / {prof.uuid}\n"
-            f"  可能：①扩展还没同步过 ②uuid 填错了 ③服务器数据被清了\n"
-            f"  怎么办：在浏览器 CookieCloud 扩展里点「立即同步」，再跑一次。"
-        )
-    if st != 200:
-        raise RuntimeError(f"CookieCloud 返回 {st}: {body[:200]}")
-    j = json.loads(body)
-    enc = j.get("encrypted")
-    if not enc:
-        raise RuntimeError("响应无 encrypted 字段（可能扩展还没上传过）")
-    try:
-        return decrypt(prof.key_pass(), enc)
-    except UnicodeDecodeError:
-        # 解出来不是合法 JSON：几乎都是 password 与上传时不一致
-        raise RuntimeError(
-            f"解密失败：{prof.name} 的 password 与上传时用的不一致。\n"
-            f"  你改了扩展里的密码，但 {cc_config.CC_CONF} 里还是旧的？\n"
-            f"  怎么办：把扩展设置页里的 password 抄进配置（或跑 "
-            f"`python cc_config.py` 前先手工同步），两边必须一模一样。"
-        ) from None
+    return cc_crypto.fetch_payload(prof.host, prof.uuid, prof.password)
 
 
-def _get(url: str) -> tuple[int, str]:
-    import urllib.error
-    import urllib.request
-
-    req = urllib.request.Request(url)
-    try:
-        with urllib.request.urlopen(req, timeout=30) as r:
-            return r.status, r.read().decode("utf-8", "replace")
-    except urllib.error.HTTPError as e:
-        return e.code, e.read().decode("utf-8", "replace")
+# 兼容旧调用点：health.py / 诊断脚本用过 cc_fetch._get
+_get = cc_crypto.get
 
 
 def all_cookies(payload: dict) -> dict[str, list[dict]]:
@@ -265,6 +212,10 @@ def main() -> int:
     except cc_config.CCConfigError as e:
         print(f"✗ 凭据不可用：\n{e}", file=sys.stderr)
         return 2
+    except (LookupError, PermissionError, ConnectionError) as e:
+        # cc_crypto 抛的这三类都是「能说人话」的故障，不该变成裸 traceback
+        print(f"✗ {e}", file=sys.stderr)
+        return 1
     except RuntimeError as e:
         print(f"✗ {e}", file=sys.stderr)
         return 1

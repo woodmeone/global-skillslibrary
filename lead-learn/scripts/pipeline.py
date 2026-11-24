@@ -210,15 +210,15 @@ def fetch_subtitle(video: Path, bvid: str) -> Path | None:
     return dest
 
 
-BILI_COOKIES = BASE / ".favorites-out" / "bilibili-cookies.txt"
-CC_CONF = BASE / ".favorites-out" / "cookiecloud.json"
-
-# ⚠ 上面这两行**覆盖**了第 43 行从 paths 导入的同名值。
-# 2026-11-24 修：BILI_COOKIES / CC_CONF 原本就是 paths.py 算好的（OUT / ...），
-# 这里再按 BASE 拼一遍，等于 paths.py 的 OUT 一旦改名就静默失配。
-# 现在直接沿用导入值，不再重算。
-#   BILI_COOKIES ← paths.BILI_COOKIES_TXT
-#   CC_CONF     ← paths.CC_CONF
+# 下面两行删掉了。它们原本是：
+#   BILI_COOKIES = BASE / ".favorites-out" / "bilibili-cookies.txt"
+#   CC_CONF      = BASE / ".favorites-out" / "cookiecloud.json"
+# 而第 43 行已经从 paths 导入了这两个同名值（paths.BILI_COOKIES_TXT / paths.CC_CONF，
+# 同样是 OUT / ... 算出来的）。再按 BASE 拼一遍属于第二真相源：
+# paths.OUT 一旦改名，这里会静默失配，且谁也想不到去这里查。
+#
+# 曾经的注解说「已修，现在沿用导入值」，但代码其实没动——注释描述了一个不存在
+# 的修复，比没注释更危险。现在真的删了。
 #
 # 同理，拉 cookie 要调 **skill 自己**的 cc_fetch.py，不是工作区里的副本。
 # 工作区那份是旧分支的快照，还在按扁平结构读凭据，一跑就 KeyError: 'host'。

@@ -5,13 +5,10 @@
   2. 能取回（GET /get/:uuid）
   3. 能按 CookieCloud 协议正确解密
 
-解密算法（官方文档）：
-  key = md5(uuid + '-' + password)[:16]
-  AES.decrypt(encrypted, key)  → CryptoJS 格式（OpenSSL 兼容，Salted__ 前缀）
+加解密与 HTTP 在 cc_crypto.py（唯一出处），本文件只编排验证流程。
 
 ⚠ 本脚本会**往服务端写入**一份探针数据（域名为 .test.local）。
-如果你只想确认「现有凭据能不能读」，用 `python cc_fetch.py show`，
-那个是只读的，不会覆盖任何真实数据。
+如果你只想确认「现有凭据能不能读」，用只读的 `python cc_fetch.py show`。
 
 用法：
     python cc_verify.py                    # 验证默认 profile
@@ -20,84 +17,21 @@
 
 from __future__ import annotations
 
-import base64
-import hashlib
 import json
 import sys
+import urllib.parse
+import urllib.request
 
 import cc_config
+import cc_crypto
 
-
-# ---- 加解密 ---------------------------------------------------------------
-
-def evp_bytes_to_key(password: bytes, salt: bytes, key_len: int, iv_len: int) -> tuple[bytes, bytes]:
-    """OpenSSL EVP_BytesToKey（MD5），CryptoJS AES 用的就是这个。"""
-    derived = b""
-    prev = b""
-    while len(derived) < key_len + iv_len:
-        prev = hashlib.md5(prev + password + salt).digest()
-        derived += prev
-    return derived[:key_len], derived[key_len:key_len + iv_len]
-
-
-def crypto_js_decrypt(passphrase: str, ciphertext_b64: str) -> str:
-    """解 CryptoJS.AES.encrypt(data, passphrase) 的输出。"""
-    from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-
-    raw = base64.b64decode(ciphertext_b64)
-    if not raw.startswith(b"Salted__"):
-        raise ValueError("不是 CryptoJS 格式（缺 Salted__ 前缀）")
-    salt = raw[8:16]
-    body = raw[16:]
-    key, iv = evp_bytes_to_key(passphrase.encode("utf-8"), salt, 32, 16)
-    dec = Cipher(algorithms.AES(key), modes.CBC(iv)).decryptor()
-    plain = dec.update(body) + dec.finalize()
-    pad = plain[-1]
-    if 1 <= pad <= 16:
-        plain = plain[:-pad]
-    return plain.decode("utf-8")
-
-
-def crypto_js_encrypt(passphrase: str, data: dict) -> str:
-    """按 CryptoJS 格式加密，用于测试上传。"""
-    import os as _os
-
-    from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-
-    text = json.dumps(data, ensure_ascii=False)
-    salt = _os.urandom(8)
-    key, iv = evp_bytes_to_key(passphrase.encode("utf-8"), salt, 32, 16)
-    raw = text.encode("utf-8")
-    pad = 16 - (len(raw) % 16)
-    raw += bytes([pad]) * pad
-    enc = Cipher(algorithms.AES(key), modes.CBC(iv)).encryptor()
-    body = enc.update(raw) + enc.finalize()
-    return base64.b64encode(b"Salted__" + salt + body).decode("ascii")
-
-
-# ---- HTTP -----------------------------------------------------------------
 
 def post(url: str, fields: dict) -> tuple[int, str]:
-    import urllib.parse
-    import urllib.request
-
     data = urllib.parse.urlencode(fields).encode("utf-8")
     req = urllib.request.Request(url, data=data, method="POST")
     req.add_header("Content-Type", "application/x-www-form-urlencoded")
     with urllib.request.urlopen(req, timeout=30) as r:
         return r.status, r.read().decode("utf-8", "replace")
-
-
-def get(url: str) -> tuple[int, str]:
-    import urllib.error
-    import urllib.request
-
-    req = urllib.request.Request(url)
-    try:
-        with urllib.request.urlopen(req, timeout=30) as r:
-            return r.status, r.read().decode("utf-8", "replace")
-    except urllib.error.HTTPError as e:
-        return e.code, e.read().decode("utf-8", "replace")
 
 
 def main() -> int:
@@ -114,13 +48,13 @@ def main() -> int:
         return 2
 
     host = prof.host.rstrip("/")
-    key_pass = prof.key_pass()
-    # ⚠ 派生密钥等价于密码：知道 md5(uuid-password) 前 16 位就能解出全部 cookie。
-    # 所以这里也不打全，只留前 4 位好让两边对得上「是不是同一个」。
+    kp = prof.key_pass()
+    # ⚠ 派生密钥等价于密码：知道 md5(uuid-password)[:16] 就能解出全部 cookie。
+    # 所以这里也不打全，只留前 4 位——够判断「两次跑的是不是同一份凭据」。
     print(f"profile = {prof.name}")
     print(f"host    = {host}")
-    print(f"uuid    = {prof.uuid[:8]}…（已隐去）")
-    print(f"派生密钥 = {key_pass[:4]}…（已隐去）")
+    print(f"uuid    = {prof.safe_uuid()}")
+    print(f"派生密钥 = {kp[:4]}…（已隐去）")
 
     # --- 1. 上传测试数据 ---
     payload = {
@@ -136,13 +70,13 @@ def main() -> int:
         },
         "local_storage_data": {},
     }
-    encrypted = crypto_js_encrypt(key_pass, payload)
+    encrypted = cc_crypto.encrypt(kp, payload)
     print("\n=== 1. POST /update ===")
     st, body = post(f"{host}/update", {"uuid": prof.uuid, "encrypted": encrypted})
     print(f"  status={st} body={body[:200]}")
 
     # --- 2. 取回 ---
-    print(f"\n=== 2. GET /get/{prof.uuid[:8]}... ===")
+    print(f"\n=== 2. GET /get/{prof.safe_uuid()} ===")
     st, body = get(f"{host}/get/{prof.uuid}")
     print(f"  status={st} len={len(body)}")
     if st != 200:
@@ -159,8 +93,7 @@ def main() -> int:
     # --- 3. 解密 ---
     print("\n=== 3. 解密 ===")
     try:
-        plain = crypto_js_decrypt(key_pass, enc)
-        got = json.loads(plain)
+        got = cc_crypto.decrypt(kp, enc)
         print("  ✓ 解密成功")
         print(f"  cookie_data 域名: {list(got.get('cookie_data', {}).keys())}")
         ck = got["cookie_data"][".test.local"][0]
@@ -174,6 +107,10 @@ def main() -> int:
     except Exception as exc:
         print(f"  ✗ 解密失败: {type(exc).__name__}: {exc}")
         return 1
+
+
+# 兼容旧调用点
+get = cc_crypto.get
 
 
 if __name__ == "__main__":

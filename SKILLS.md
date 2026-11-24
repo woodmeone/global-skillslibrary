@@ -7,7 +7,7 @@
 
 ---
 
-## 一、本库直接收录（20 个）
+## 一、本库直接收录（21 个）
 
 clone 本仓即得，无需额外操作。
 
@@ -59,7 +59,8 @@ clone 本仓即得，无需额外操作。
 
 | 技能 | 路径 | 干什么 |
 |---|---|---|
-| `codebase-walkthrough` | `community-skills/codebase-walkthrough` | 读懂陌生项目 → 两个 HTML：可下钻链路图 + 图文讲解。元素抽象 + 链路编排 + 验证；多场景案例走遍每个分支，边覆盖率为计算值 |
+| `codebase-blueprint` | `community-skills/codebase-blueprint` | **画图**：模型（节点+边）→ 一张可下钻的 HTML 图。业务流程图 / ETL / 决策树 / 状态机 / 架构图 / 代码结构通用。拥有渲染引擎 |
+| `codebase-walkthrough` | `community-skills/codebase-walkthrough` | **讲解**：读懂陌生项目 → 场景案例 + 图 + 四问卡。多场景走遍每个分支，边覆盖率为计算值。**依赖 codebase-blueprint**（调用其 core.mjs，不持有引擎副本） |
 
 ---
 
@@ -117,6 +118,7 @@ $LIB = "D:\Project\globalSkills-library"
 New-Item -ItemType Junction -Path "$SK\media-downloader"         -Target "$LIB\media-downloader"
 New-Item -ItemType Junction -Path "$SK\product-manual"           -Target "$LIB\product-manual"
 New-Item -ItemType Junction -Path "$SK\lead-learn"               -Target "$LIB\lead-learn"
+New-Item -ItemType Junction -Path "$SK\codebase-blueprint"       -Target "$LIB\community-skills\codebase-blueprint"
 New-Item -ItemType Junction -Path "$SK\codebase-walkthrough"     -Target "$LIB\community-skills\codebase-walkthrough"
 Get-ChildItem "$LIB\community-skills" -Directory | ForEach-Object {
     New-Item -ItemType Junction -Path "$SK\$($_.Name)" -Target $_.FullName
@@ -139,10 +141,10 @@ python "$env:USERPROFILE\.dsh\skills\recall\scripts\download_bge_m3.py"
 
 ```powershell
 # 技能数对不对。每一类按上面的流程软链完之后，实测数量是：
-#   globalSkills 本库直接收录  17（community-skills 逐条）+ 4（顶层 media-downloader / product-manual / lead-learn / codebase-walkthrough）
+#   globalSkills 本库直接收录  18（community-skills 逐条）+ 4（顶层 media-downloader / product-manual / lead-learn / codebase-walkthrough）
 #   globalSkills 外部仓库      mattpocock-skills 38（逐条软链，不是整目录）+ MidNight 1 + git-native-sop 1
 #   TeacherPipeLine           10（独立库，不在本仓）
-# 合计 69，其中指向本仓的 59。
+# 合计 71，其中指向本仓的 61。
 (Get-ChildItem "$env:USERPROFILE\.dsh\skills" -Directory | Where-Object LinkType).Count
 
 # 只看本仓的
@@ -170,6 +172,6 @@ python "$env:USERPROFILE\.dsh\skills\lead-learn\scripts\dispatch.py" status
 ## 七、时间戳
 
 - 建立：2026-11-24
-- 本库收录：20 个技能
+- 本库收录：21 个技能
 - 外部仓库：3 个（MidNight / git-native-sop / mattpocock-skills）
 - 排除：模型权重 2161 MB、`node_modules`、`.venv`、`_backup`

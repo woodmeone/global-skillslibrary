@@ -1,0 +1,61 @@
+{
+  "title": "示例 · 一张图",
+  "sub": "复制这个文件，改掉方框和箭头就是你的图。",
+  "root": "main",
+  "diagrams": {
+    "main": {
+      "title": "主流程",
+      "sub": "点方框上的 ⧉ 进它的内部；Esc 返回。",
+      "crumb": "主流程",
+      "w": 1100,
+      "h": 420,
+      "bounds": [
+        { "x": 20, "y": 90, "w": 1060, "h": 240, "label": "这一整块是什么" }
+      ],
+      "nodes": [
+        {
+          "id": "start", "x": 40, "y": 140, "w": 200, "h": 120,
+          "title": "起点", "lines": ["谁触发的", "带进来什么"],
+          "tip": "悬停显示的补充说明"
+        },
+        {
+          "id": "check", "x": 320, "y": 140, "w": 220, "h": 120,
+          "title": "检查", "lines": ["第一条规则", "第二条规则"],
+          "drill": "check"
+        },
+        {
+          "id": "pass", "x": 620, "y": 140, "w": 200, "h": 120,
+          "title": "放行", "lines": ["往下走"]
+        },
+        {
+          "id": "stop", "x": 320, "y": 300, "w": 220, "h": 80,
+          "title": "拦下", "lines": ["说清为什么"],
+          "style": "tagged", "tag": "拒绝"
+        }
+      ],
+      "edges": [
+        { "from": "start", "to": "check", "fs": "r", "ts": "l", "label": "输入.原始" },
+        { "from": "check", "to": "pass", "fs": "r", "ts": "l", "label": "全部通过" },
+        { "from": "check", "to": "stop", "fs": "b", "ts": "t", "label": "任一条命中", "dashed": true },
+        { "from": "pass", "to": "check", "fs": "t", "ts": "t", "via": [[720, 100], [430, 100]], "label": "过期 → 重来一次", "dashed": true }
+      ]
+    },
+    "check": {
+      "title": "检查 · 内部",
+      "sub": "点开一个方框之后看到的东西。",
+      "crumb": "检查",
+      "w": 900,
+      "h": 300,
+      "parent": "main",
+      "nodes": [
+        { "id": "c1", "x": 40, "y": 90, "w": 220, "h": 110, "title": "第一步", "lines": ["做了什么"] },
+        { "id": "c2", "x": 340, "y": 90, "w": 220, "h": 110, "title": "第二步", "lines": ["做了什么"] },
+        { "id": "c3", "x": 640, "y": 90, "w": 220, "h": 110, "title": "第三步", "lines": ["做了什么"] }
+      ],
+      "edges": [
+        { "from": "c1", "to": "c2", "fs": "r", "ts": "l", "label": "数据" },
+        { "from": "c2", "to": "c3", "fs": "r", "ts": "l", "label": "数据" }
+      ]
+    }
+  }
+}

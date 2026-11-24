@@ -1,20 +1,41 @@
 ---
 name: codebase-walkthrough
-description: Understand an unfamiliar project or process and hand back two readable HTML files — a layered interactive flow diagram, and the same diagram wrapped in a written walkthrough. Models the system as elements + orchestration + verification (元素抽象 + 链路编排 + 验证), explains every node with four questions (是什么 / 为什么 / 有什么用 / 怎么用), and walks several named scenario cases through the flow — one per branch — with computed edge coverage so "we covered the branches" is checkable. Use when the user wants to get up to speed on a project (快速上手 / 摸清项目 / 看懂这个系统), asks for a walkthrough / explainer / onboarding doc / 图文讲解 / 项目解读, wants a 链路图 / 流程图 / 架构图 / 业务链路图 that also explains itself, wants scenario cases / 用户故事 / 场景案例 / branches and exceptions woven through a flow, or asks to click a node and read its parameters and reasoning.
+description: Understand an unfamiliar project or process and hand back a written walkthrough — a layered interactive flow diagram plus scenario cases and four questions per node. Models the system as elements + orchestration + verification (元素抽象 + 链路编排 + 验证), explains every node with 是什么 / 为什么 / 有什么用 / 怎么用, and walks several named scenario cases through the flow — one per branch — with computed edge coverage so "we covered the branches" is checkable. Use when the user wants to get up to speed on a project (快速上手 / 摸清项目 / 看懂这个系统 / 项目解读 / 图文讲解), wants an explainer or onboarding doc, wants a diagram that also explains itself with scenario cases / 用户故事 / 场景案例 covering branches and exceptions, or asks to click a node and read its parameters and reasoning. **Only the diagram, no explanation? Use `codebase-blueprint` instead** — this skill is built on it and requires it installed alongside.
 ---
 
-# Two files that explain a system
+# A written walkthrough of a system
 
 You read the project, model it, and hand back **two HTML files from one model**:
 
 | File | What it is | When to open it |
 |---|---|---|
-| `图文讲解.html` | story → diagram → four-question cards | reading, learning, onboarding |
+| `图文讲解.html` | scenario cases → diagram → four-question cards | reading, learning, onboarding |
 | `链路图.html` | the same diagram alone, full viewport | navigating, drilling, searching |
 
 They share one `model.json` and link to each other. **Both come out of a single build command, so they cannot drift.**
 
 The split is not decoration. Reading wants a scrolling document; navigating wants a fixed viewport with the whole screen for the graph. Cram both into one page and the diagram loses its canvas and the prose loses its scroll.
+
+## This skill owns no drawing code
+
+The picture is drawn by **`codebase-blueprint`**, a sibling skill:
+
+```
+community-skills/
+├── codebase-blueprint/          renders the diagram; owns renderer.js + blueprint.css
+│   └── scripts/core.mjs         ← imported here
+└── codebase-walkthrough/
+    └── scripts/build.mjs        imports core.mjs, wraps the diagram in a document
+```
+
+- **One copy of the engine**, in `codebase-blueprint/scripts/flow/`.
+- Dependency runs one way: **walkthrough → blueprint**. Never the reverse.
+- If `codebase-blueprint` is missing, `build.mjs` exits 1 with the command to
+  link it, rather than an `ERR_MODULE_NOT_FOUND` stack. Keep them side by side
+  (they are siblings in this repo, so one `SKILLS.md` junction step installs both).
+
+Want only a diagram, with no story or cards? That is `codebase-blueprint`'s
+job — do not use this skill for it.
 
 ## The order matters
 

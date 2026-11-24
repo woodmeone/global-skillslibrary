@@ -87,21 +87,21 @@ const HERE = path.dirname(fileURLToPath(import.meta.url))
 /** The drawing skill this one is built on.
  *
  *  Loaded with a dynamic import ON PURPOSE. A static `import ... from
- *  '../../codebase-blueprint/...'` is resolved by the ESM loader before any of
+ *  '../../blueprint/...'` is resolved by the ESM loader before any of
  *  this file runs, so a missing sibling would surface as
  *  ERR_MODULE_NOT_FOUND with a stack trace — an error about module resolution
  *  when the real problem is "you installed one of the two skills". Check
  *  first, then import. */
-const CORE = path.resolve(HERE, '..', '..', 'codebase-blueprint', 'scripts', 'core.mjs')
+const CORE = path.resolve(HERE, '..', '..', 'blueprint', 'scripts', 'core.mjs')
 if (!fs.existsSync(CORE)) {
-  console.error('codebase-walkthrough 需要 codebase-blueprint 同时安装。')
+  console.error('codebase-walkthrough 需要 blueprint 同时安装。')
   console.error(`  找不到：${CORE}`)
   console.error('')
   console.error('  两者在本仓是兄弟目录，按 SKILLS.md「新环境接入」一起软链：')
   console.error('    $LIB = "D:\\Project\\globalSkills-library"')
   console.error('    $SK  = "$env:USERPROFILE\\.dsh\\skills"')
-  console.error('    New-Item -ItemType Junction -Path "$SK\\codebase-blueprint" `')
-  console.error('      -Target "$LIB\\community-skills\\codebase-blueprint"')
+  console.error('    New-Item -ItemType Junction -Path "$SK\\blueprint" `')
+  console.error('      -Target "$LIB\\community-skills\\blueprint"')
   console.error('')
   console.error('  codebase-walkthrough 不持有画图引擎，它调用 blueprint 的 core.mjs。')
   process.exit(1)

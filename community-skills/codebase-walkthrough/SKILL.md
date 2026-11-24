@@ -1,6 +1,6 @@
 ---
 name: codebase-walkthrough
-description: Understand an unfamiliar project or process and hand back a written walkthrough — a layered interactive flow diagram plus scenario cases and four questions per node. Models the system as elements + orchestration + verification (元素抽象 + 链路编排 + 验证), explains every node with 是什么 / 为什么 / 有什么用 / 怎么用, and walks several named scenario cases through the flow — one per branch — with computed edge coverage so "we covered the branches" is checkable. Use when the user wants to get up to speed on a project (快速上手 / 摸清项目 / 看懂这个系统 / 项目解读 / 图文讲解), wants an explainer or onboarding doc, wants a diagram that also explains itself with scenario cases / 用户故事 / 场景案例 covering branches and exceptions, or asks to click a node and read its parameters and reasoning. **Only the diagram, no explanation? Use `codebase-blueprint` instead** — this skill is built on it and requires it installed alongside.
+description: Understand an unfamiliar project or process and hand back a written walkthrough — a layered interactive flow diagram plus scenario cases and four questions per node. Models the system as elements + orchestration + verification (元素抽象 + 链路编排 + 验证), explains every node with 是什么 / 为什么 / 有什么用 / 怎么用, and walks several named scenario cases through the flow — one per branch — with computed edge coverage so "we covered the branches" is checkable. Use when the user wants to get up to speed on a project (快速上手 / 摸清项目 / 看懂这个系统 / 项目解读 / 图文讲解), wants an explainer or onboarding doc, wants a diagram that also explains itself with scenario cases / 用户故事 / 场景案例 covering branches and exceptions, or asks to click a node and read its parameters and reasoning. **Only the diagram, no explanation? Use `blueprint` instead** — this skill is built on it and requires it installed alongside.
 ---
 
 # A written walkthrough of a system
@@ -18,23 +18,23 @@ The split is not decoration. Reading wants a scrolling document; navigating want
 
 ## This skill owns no drawing code
 
-The picture is drawn by **`codebase-blueprint`**, a sibling skill:
+The picture is drawn by **`blueprint`**, a sibling skill:
 
 ```
 community-skills/
-├── codebase-blueprint/          renders the diagram; owns renderer.js + blueprint.css
+├── blueprint/                   renders the diagram; owns renderer.js + blueprint.css
 │   └── scripts/core.mjs         ← imported here
 └── codebase-walkthrough/
     └── scripts/build.mjs        imports core.mjs, wraps the diagram in a document
 ```
 
-- **One copy of the engine**, in `codebase-blueprint/scripts/flow/`.
+- **One copy of the engine**, in `blueprint/scripts/flow/`.
 - Dependency runs one way: **walkthrough → blueprint**. Never the reverse.
-- If `codebase-blueprint` is missing, `build.mjs` exits 1 with the command to
+- If `blueprint` is missing, `build.mjs` exits 1 with the command to
   link it, rather than an `ERR_MODULE_NOT_FOUND` stack. Keep them side by side
   (they are siblings in this repo, so one `SKILLS.md` junction step installs both).
 
-Want only a diagram, with no story or cards? That is `codebase-blueprint`'s
+Want only a diagram, with no story or cards? That is `blueprint`'s
 job — do not use this skill for it.
 
 ## The order matters

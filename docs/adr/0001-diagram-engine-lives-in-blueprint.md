@@ -1,4 +1,4 @@
-# ADR-0001：画图引擎放在 codebase-blueprint，walkthrough 引用而非复制
+# ADR-0001：画图引擎放在 blueprint，walkthrough 引用而非复制
 
 - 日期：2026-11-24
 - 状态：已采纳
@@ -26,16 +26,20 @@
 历史上曾有一个独立的 `codebase-blueprint` 技能，后被合并删除。这次是反向操作，
 但必须回答一个问题：**引擎怎么办？**
 
+> 命名后记：本决策最初落地时该技能名为 `codebase-blueprint`。2026-11-24 改名为
+> `blueprint` —— `codebase` 前缀会让人以为它只能画代码结构，与「通用画图」的
+> 定位矛盾。改名是本次决策的延续，不是推翻；下文统一用新名。
+
 ## 决策与取舍
 
-**选：`codebase-blueprint` 独立成技能并拥有引擎；`codebase-walkthrough` 通过
+**选：`blueprint` 独立成技能并拥有引擎；`codebase-walkthrough` 通过
 `import` 引用它的 `core.mjs`，不持有副本。**
 
 依赖方向单一：`walkthrough → blueprint`。反向无依赖。
 
 ```
 community-skills/
-├── codebase-blueprint/
+├── blueprint/
 │   ├── SKILL.md                     画图 skill（description 面向画图场景）
 │   ├── assets/model.template.json
 │   └── scripts/
@@ -61,7 +65,7 @@ community-skills/
 - **两个技能必须同时安装。** 缓解：它们在本仓是兄弟目录，`SKILLS.md` 的接入脚本
   一起软链；`build.mjs` 启动时先检查 `core.mjs` 在不在，缺失则打印补救命令并
   exit 1，而不是抛 `ERR_MODULE_NOT_FOUND`。
-- **相对路径 `../../codebase-blueprint/`** 依赖两者固定的兄弟关系。这是一个真实
+- **相对路径 `../../blueprint/`** 依赖两者固定的兄弟关系。这是一个真实
   约束，写进了 `SKILLS.md` 和两边的 SKILL.md。
 
 ## 后果
@@ -84,7 +88,7 @@ community-skills/
 
 **后来者要注意：**
 
-- 想加新的渲染能力（比如新节点样式），改 `codebase-blueprint`，不要动
+- 想加新的渲染能力（比如新节点样式），改 `blueprint`，不要动
   `codebase-walkthrough`。
 - 想改讲解结构（场景案例、四问卡、覆盖率），改 `codebase-walkthrough`。
 - 判断归属的问法：**这件事需不需要知道「业务语义」？** 不需要 → blueprint。

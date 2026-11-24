@@ -59,8 +59,8 @@ clone 本仓即得，无需额外操作。
 
 | 技能 | 路径 | 干什么 |
 |---|---|---|
-| `codebase-blueprint` | `community-skills/codebase-blueprint` | **画图**：模型（节点+边）→ 一张可下钻的 HTML 图。业务流程图 / ETL / 决策树 / 状态机 / 架构图 / 代码结构通用。拥有渲染引擎 |
-| `codebase-walkthrough` | `community-skills/codebase-walkthrough` | **讲解**：读懂陌生项目 → 场景案例 + 图 + 四问卡。多场景走遍每个分支，边覆盖率为计算值。**依赖 codebase-blueprint**（调用其 core.mjs，不持有引擎副本） |
+| `blueprint` | `community-skills/blueprint` | **画图**：模型（节点+边）→ 一张可下钻的 HTML 图。业务流程图 / ETL / 决策树 / 状态机 / 架构图 / 代码结构通用。拥有渲染引擎 |
+| `codebase-walkthrough` | `community-skills/codebase-walkthrough` | **讲解**：读懂陌生项目 → 场景案例 + 图 + 四问卡。多场景走遍每个分支，边覆盖率为计算值。**依赖 blueprint**（调用其 core.mjs，不持有引擎副本） |
 
 ---
 
@@ -118,7 +118,7 @@ $LIB = "D:\Project\globalSkills-library"
 New-Item -ItemType Junction -Path "$SK\media-downloader"         -Target "$LIB\media-downloader"
 New-Item -ItemType Junction -Path "$SK\product-manual"           -Target "$LIB\product-manual"
 New-Item -ItemType Junction -Path "$SK\lead-learn"               -Target "$LIB\lead-learn"
-New-Item -ItemType Junction -Path "$SK\codebase-blueprint"       -Target "$LIB\community-skills\codebase-blueprint"
+New-Item -ItemType Junction -Path "$SK\blueprint"                 -Target "$LIB\community-skills\blueprint"
 New-Item -ItemType Junction -Path "$SK\codebase-walkthrough"     -Target "$LIB\community-skills\codebase-walkthrough"
 Get-ChildItem "$LIB\community-skills" -Directory | ForEach-Object {
     New-Item -ItemType Junction -Path "$SK\$($_.Name)" -Target $_.FullName

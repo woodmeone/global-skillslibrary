@@ -4,79 +4,50 @@
   持久化 profile 的登录态会过期。CookieCloud 由浏览器扩展定时上传，
   我们从服务端拉最新的一份，pipeline 就不依赖「本地浏览器还登着」。
 
+三层分工，依赖单向（本文件 → cc_config → cc_crypto）：
+  cc_crypto.py   纯加解密 + HTTP，不认识配置
+  cc_config.py   凭据解析与校验，不认识 cookie 格式
+  本文件          取数 + 转 Netscape / Playwright 格式
+
 用法：
-    python cc_fetch.py show              # 看有哪些域名、多少 cookie
-    python cc_fetch.py export bilibili   # 导出 Netscape cookies.txt
+    python cc_fetch.py show                       # 看有哪些域名、多少 cookie
+    python cc_fetch.py profiles                   # 看有几份账号、哪些可用
+    python cc_fetch.py export bilibili            # 导出 Netscape cookies.txt
+    python cc_fetch.py export bilibili --profile edge-a
 """
 
 from __future__ import annotations
 
-import base64
-import hashlib
 import json
-import os
 import sys
-import urllib.request
-from datetime import datetime
-from pathlib import Path
 
-from paths import CC_CONF as CONF, OUT as OUT_DIR  # noqa: E402
-
-
-def load_conf() -> dict:
-    return json.loads(CONF.read_text(encoding="utf-8-sig"))
+from paths import OUT as OUT_DIR
+import cc_config
+import cc_crypto
 
 
-def evp_bytes_to_key(password: bytes, salt: bytes, key_len: int, iv_len: int) -> tuple[bytes, bytes]:
-    derived = b""
-    prev = b""
-    while len(derived) < key_len + iv_len:
-        prev = hashlib.md5(prev + password + salt).digest()
-        derived += prev
-    return derived[:key_len], derived[key_len:key_len + iv_len]
+# ---- 取数 -----------------------------------------------------------------
+
+def fetch_payload(profile: str | None = None) -> dict:
+    """拉一份并解密。profile 名字可指定，缺省走 cc_config 的默认选择。
+
+    加解密本身在 cc_crypto 里——这里只负责「先选账号，再取数」。
+    """
+    prof = cc_config.select(profile)
+    return cc_crypto.fetch_payload(prof.host, prof.uuid, prof.password)
 
 
-def decrypt(key_pass: str, ciphertext_b64: str) -> dict:
-    from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-
-    raw = base64.b64decode(ciphertext_b64)
-    if not raw.startswith(b"Salted__"):
-        raise ValueError("非 CryptoJS 格式")
-    salt, body = raw[8:16], raw[16:]
-    key, iv = evp_bytes_to_key(key_pass.encode(), salt, 32, 16)
-    d = Cipher(algorithms.AES(key), modes.CBC(iv)).decryptor()
-    plain = d.update(body) + d.finalize()
-    pad = plain[-1]
-    if 1 <= pad <= 16:
-        plain = plain[:-pad]
-    return json.loads(plain.decode("utf-8"))
+# 兼容旧调用点：health.py / 诊断脚本用过 cc_fetch._get
+_get = cc_crypto.get
 
 
-def fetch_payload() -> dict:
-    conf = load_conf()
-    host = conf["host"].rstrip("/")
-    uuid = conf["uuid"]
-    password = conf["password"]
-    key_pass = hashlib.md5(f"{uuid}-{password}".encode()).hexdigest()[:16]
-
-    st, body = _get(f"{host}/get/{uuid}")
-    if st != 200:
-        raise RuntimeError(f"CookieCloud 返回 {st}: {body[:200]}")
-    j = json.loads(body)
-    enc = j.get("encrypted")
-    if not enc:
-        raise RuntimeError("响应无 encrypted 字段（可能扩展还没上传过）")
-    return decrypt(key_pass, enc)
+def all_cookies(payload: dict) -> dict[str, list[dict]]:
+    """按域名分组。"""
+    data = payload.get("cookie_data") or {}
+    return {k: v for k, v in data.items() if isinstance(v, list) and v}
 
 
-def _get(url: str) -> tuple[int, str]:
-    req = urllib.request.Request(url)
-    try:
-        with urllib.request.urlopen(req, timeout=30) as r:
-            return r.status, r.read().decode("utf-8", "replace")
-    except urllib.error.HTTPError as e:
-        return e.code, e.read().decode("utf-8", "replace")
-
+# ---- 格式转换 -------------------------------------------------------------
 
 def to_netscape(cookies: list[dict]) -> str:
     lines = ["# Netscape HTTP Cookie File", "# from CookieCloud", ""]
@@ -131,14 +102,22 @@ def to_playwright(cookies: list[dict]) -> list[dict]:
     return out
 
 
-def all_cookies(payload: dict) -> dict[str, list[dict]]:
-    """按域名分组。"""
-    data = payload.get("cookie_data") or {}
-    return {k: v for k, v in data.items() if isinstance(v, list) and v}
+# ---- 命令 -----------------------------------------------------------------
+
+def cmd_profiles() -> int:
+    print(f"凭据文件：{cc_config.CC_CONF}\n")
+    print(cc_config.summary())
+    try:
+        got = cc_config.select()
+        print(f"\n默认使用：{got.name}")
+        return 0
+    except cc_config.CCConfigError as e:
+        print(f"\n⚠ {e}")
+        return 2
 
 
-def cmd_show() -> int:
-    p = fetch_payload()
+def cmd_show(profile: str | None = None) -> int:
+    p = fetch_payload(profile)
     groups = all_cookies(p)
     if not groups:
         print("CookieCloud 里没有 cookie_data —— 扩展可能还没上传")
@@ -154,8 +133,8 @@ def cmd_show() -> int:
     return 0
 
 
-def cmd_export(platform: str) -> int:
-    p = fetch_payload()
+def cmd_export(platform: str, profile: str | None = None) -> int:
+    p = fetch_payload(profile)
     groups = all_cookies(p)
 
     # CookieCloud 的域名键不一定等于真实域名。
@@ -203,16 +182,43 @@ def cmd_export(platform: str) -> int:
     return 0
 
 
+def _pop_opt(args: list[str], flag: str) -> tuple[list[str], str | None]:
+    """摘出 `--flag value`，返回剩余参数和值。"""
+    if flag in args:
+        i = args.index(flag)
+        if i + 1 >= len(args):
+            raise SystemExit(f"{flag} 后面要跟一个值")
+        val = args[i + 1]
+        del args[i:i + 2]
+        return args, val
+    return args, None
+
+
 def main() -> int:
-    if len(sys.argv) < 2:
+    args = list(sys.argv[1:])
+    args, prof = _pop_opt(args, "--profile")
+    if not args:
         print(__doc__)
         return 64
-    cmd = sys.argv[1]
-    if cmd == "show":
-        return cmd_show()
-    if cmd == "export":
-        plat = sys.argv[2] if len(sys.argv) > 2 else "bilibili"
-        return cmd_export(plat)
+    cmd = args[0]
+    try:
+        if cmd == "show":
+            return cmd_show(prof)
+        if cmd == "profiles":
+            return cmd_profiles()
+        if cmd == "export":
+            plat = args[1] if len(args) > 1 else "bilibili"
+            return cmd_export(plat, prof)
+    except cc_config.CCConfigError as e:
+        print(f"✗ 凭据不可用：\n{e}", file=sys.stderr)
+        return 2
+    except (LookupError, PermissionError, ConnectionError) as e:
+        # cc_crypto 抛的这三类都是「能说人话」的故障，不该变成裸 traceback
+        print(f"✗ {e}", file=sys.stderr)
+        return 1
+    except RuntimeError as e:
+        print(f"✗ {e}", file=sys.stderr)
+        return 1
     print(__doc__)
     return 64
 

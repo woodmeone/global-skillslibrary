@@ -15,12 +15,33 @@
 
 | 模块 | 代码区域 | 职责 |
 |---|---|---|
-| 凭据 | `scripts/cc_fetch.py` `cc_verify.py` `export_cookies.py` | 从 CookieCloud 拉登录态，导出 yt-dlp / Playwright 两种格式 |
+| 凭据 | `scripts/cc_crypto.py` `cc_config.py` `cc_fetch.py` `cc_verify.py` | 从 CookieCloud 拉登录态，导出 yt-dlp / Playwright 两种格式 |
 | 抓取 | `scripts/bili_grab3.py` `favorites.py` | B站走 `resource/ids`（避 412），抖音走 Playwright 拦 XHR |
 | 处理 | `scripts/pipeline.py` | 增量检测 → 下载 → 字幕/ASR/抽帧 → 落 staged 稿 |
 | 分流 | `scripts/dispatch.py` | **不做打分**。落派单文件、核盘面、管状态 |
 | 路径 | `scripts/paths.py` | **所有路径与环境变量的唯一出处** |
 | 体检 | `scripts/health.py` | CookieCloud / 凭据 / 数据新鲜度 / 流水线 |
+
+### 凭据层三层，依赖单向
+
+```
+cc_fetch.py / cc_verify.py  →  cc_config.py  →  cc_crypto.py
+     取数 + 格式转换            凭据解析与校验      纯加解密 + HTTP
+```
+
+`cc_crypto` 不认识配置、不碰路径，所以 `cc_config.set_credentials()` 能在写盘前
+用它验证「新口令能不能解开服务端密文」而不形成循环 import。
+
+### 多账号（一份 profile = 一个浏览器 = 一个账号）
+
+`cookiecloud.json` 支持 `profiles` 数组，也兼容旧的扁平写法。
+**凭据解析只有一处**：`cc_config.select()`。选哪一份 = `--profile` >
+`LEAD_LEARN_CC_PROFILE` > `paths.CC_PROFILE` > `preferred` > 唯一一份 > 报错。
+多份都没有 `preferred` 时报错，**不替你挑**。
+
+**B站 UID 必须与 profile 成对配**（`~/.lead-learn/config.json` 的
+`bili_uid_by_profile`）。**绑定项缺失时不回退通用 `bili_uid`**——回退就是
+另一个账号，`BILI_UID` 直接为空并给出原因。`bili_grab3.py` 抓前核对 `DedeUserID`。
 
 ## 核心流程
 
@@ -87,6 +108,23 @@
 4. **`paths.py` 是路径唯一出处。** 任何脚本不许再硬编码 YTDLP / FFMPEG / SKILL 路径——曾因此让 4 个环境变量全部失效。
 5. **子智能体只动自己的记忆区**，不许碰别的 agent 目录。
 6. **测试不许碰真实盘**：fixture 必须先 `assert DISPATCH == tmpdir` 再干活。
+7. **脚本只有一份真身，在 skill 里。** 工作区（`$LEAD_LEARN_HOME`）只放转发壳和数据。
+   2026-11-24 之前工作区有 `cc_fetch.py` / `health.py` / `cc_verify.py` 的副本，
+   凭据结构升级后只有 skill 版跟着改，于是同一个命令换个目录就 `KeyError: 'host'`。
+   **转发壳不在本仓库里**（它们属于用户工作区），仓库只保证 skill 版是唯一真身；
+   壳的生成方式见 `references/cookiecloud.md`。
+8. **不校验 uuid / password 的形状。** 服务端只把 uuid 当目录名，什么形状都收。
+   初版按「36 位 UUID + 32 位十六进制」写死正则，把实测可用的自定义 uuid
+   判成非法拦下。形状只进 `warnings()`，不拦。
+   **占位值只按前缀匹配**，不做子串匹配——子串会把 `PassTODOword9`、
+   `a<b>C9` 这类合法密码判成「没填」。
+9. **凭据一律脱敏输出。** 密码与 uuid 都只给长度（`profile.safe_uuid()`），
+   派生密钥最多前 4 位。要打 uuid 别写 `uid[:8]`，走 `safe_uuid()`。
+10. **真实账号标识不入库。** uuid、B站 UID、域名、cookie 值一律不进代码与文档，
+    测试用同形状假值。公开仓库里它们是隐私。`.gitignore` 挡文件，纪律挡字面量。
+11. **凭据写入必须先用服务端验过。** `set_credentials()` 默认 `verify_remote=True`：
+    新口令解不开服务端密文就**一个字节都不写**。写盘走 `.tmp` → 回读 → `os.replace`，
+    原文件始终是完整可用的旧版本。语法合法的错口令本地查不出来，只在下次抓取时炸。
 
 ## 状态机（源稿 status）
 
@@ -107,7 +145,9 @@
 - 按语义分流到 13 个 agent（**判断在人，脚本只做机械活**）
 - 派单状态机 + 盘面核查（`status` / `verify`）
 - `clean` 清媒体（含孤儿），`retry` 重试，`reset` 撤错重派
-- 13 个回归测试（`tests/`）
+- 多账号 CookieCloud（`profiles` 数组，`cc_config.select()` 统一解析）
+- B站 UID 与 profile 绑定 + 抓前交叉校验（`bili_uid_by_profile`）
+- 42 个回归测试（`tests/`）
 
 ## 演进方向
 

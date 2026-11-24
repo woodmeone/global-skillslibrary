@@ -87,6 +87,12 @@ DY_COOKIES_TXT = OUT / "douyin-cookies.txt"
 DY_COOKIES_JSON = OUT / "douyin-cookies.json"
 CC_CONF = OUT / "cookiecloud.json"
 
+# ---- CookieCloud 用哪份账号 ----
+# 多份 profile（一个浏览器一个账号）时，lead-learn 用哪一份。
+# 留空 = 由 cc_config 按 cookiecloud.json 里的 preferred:true 决定。
+CC_PROFILE = (os.environ.get("LEAD_LEARN_CC_PROFILE", "").strip()
+              or str(_CFG.get("cc_profile") or "").strip())
+
 # ---- 收藏数据 ----
 BILI_FAV = OUT / "bilibili-latest40.json"
 DY_FAV = OUT / "douyin-favorites.json"
@@ -125,8 +131,46 @@ CHROMIUM = Path(
 )
 
 # B站 UID。**必须自己填**，不设默认值——写死谁的 UID 都等于替别人抓收藏夹。
-# 三种给法（优先级同上）：环境变量 BILI_UID > ~/.lead-learn/config.json 的 bili_uid > 空
-BILI_UID = os.environ.get("BILI_UID", "").strip() or str(_CFG.get("bili_uid") or "").strip()
+#
+# 四级：环境变量 BILI_UID > 按 profile 绑定的 uid > 通用 bili_uid > 空
+#
+# ⚠ **为什么要按 profile 绑定**（2026-11-24 踩出来的）：
+#   一份 cookie = 一个登录账号。cookie 换了账号而 UID 没换，抓的就是
+#   **别人的收藏夹**——而且完全不报错，只是内容悄悄变了。
+#
+# ⚠ **缺 key 时不许回退到通用 bili_uid。**
+#   早先的写法是 `_env_uid or _bound_uid or 通用 bili_uid`，于是 cc_profile
+#   指向 chrome-b、而 bili_uid_by_profile 里只有 edge-a（漏填/拼错/按老文档
+#   配置）时，会**静默退回另一个账号的 UID**——正是本文件要消灭的那个错，
+#   换了个入口又回来了。
+#
+#   现在的判据：只要 cc_profile 有值，就**必须**在 bili_uid_by_profile 里
+#   找到对应的 key；找不到就是 BILI_UID = ""，让下游明确报错而不是抓错人。
+#   「配错了要吵，不要猜」——和 cc_config 里「不替你挑 profile」同一条原则。
+_env_uid = os.environ.get("BILI_UID", "").strip()
+_uid_map = _CFG.get("bili_uid_by_profile") or {}
+_generic_uid = str(_CFG.get("bili_uid") or "").strip()
+
+if _env_uid:
+    BILI_UID = _env_uid
+elif CC_PROFILE and isinstance(_uid_map, dict):
+    # 绑定了 profile：只认这个 key，缺失即空（不回退 _generic_uid）
+    BILI_UID = str(_uid_map.get(CC_PROFILE) or "").strip()
+else:
+    # 没绑 profile（单账号老配置）：才轮到通用 bili_uid
+    BILI_UID = _generic_uid
+
+# 供体检/抓取层诊断用：空值 + 有原因时说明为什么空
+BILI_UID_PROBLEM = ""
+if not BILI_UID:
+    if CC_PROFILE and isinstance(_uid_map, dict) and _uid_map:
+        BILI_UID_PROBLEM = (
+            f"cc_profile={CC_PROFILE!r} 在 bili_uid_by_profile 里没有对应项"
+            f"（已有 {sorted(_uid_map)}）。不回退到通用 bili_uid——"
+            f"那会是另一个账号的 UID，抓回来的是别人的收藏夹。"
+        )
+    elif not _generic_uid:
+        BILI_UID_PROBLEM = "没配 bili_uid，也没配 bili_uid_by_profile"
 
 # 每平台每次抓多少条收藏。**唯一出处**，bili_grab3.py 与 favorites.py 都读它。
 #

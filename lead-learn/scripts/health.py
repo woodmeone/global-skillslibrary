@@ -21,6 +21,9 @@ from pathlib import Path
 
 from paths import HOME as BASE, OUT, STATE, CC_CONF  # noqa: E402
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import cc_config  # noqa: E402
+
 OK = "✓"
 BAD = "✗"
 WARN = "⚠"
@@ -39,8 +42,14 @@ def check_cc_server() -> bool:
     if not CC_CONF.exists():
         line("CookieCloud 配置", False, "缺 cookiecloud.json")
         return False
-    conf = json.loads(CC_CONF.read_text(encoding="utf-8-sig"))
-    host = conf["host"].rstrip("/")
+    try:
+        prof = cc_config.select()
+    except cc_config.CCConfigError as exc:
+        line("CookieCloud 配置", False, str(exc).splitlines()[0])
+        for ln in str(exc).splitlines()[1:]:
+            print(f"      {ln}")
+        return False
+    host = prof.host.rstrip("/")
     try:
         req = urllib.request.Request(f"{host}/get/__health_probe__")
         try:
@@ -49,7 +58,7 @@ def check_cc_server() -> bool:
         except urllib.error.HTTPError as e:
             code = e.code
         # 404 说明服务活着（uuid 不存在），任何 2xx/4xx 都算通
-        line("CookieCloud 服务", code < 500, f"{host} → {code}")
+        line("CookieCloud 服务", code < 500, f"{host} → {code}  [{prof.name}]")
         return code < 500
     except Exception as exc:
         line("CookieCloud 服务", False, f"{type(exc).__name__}")
@@ -58,7 +67,11 @@ def check_cc_server() -> bool:
 
 def check_cc_data() -> dict[str, int]:
     """返回 CookieCloud 里的域名 → cookie 数。"""
-    sys.path.insert(0, str(BASE))
+    # ⚠ 必须导入**本目录**的 cc_fetch（skill 里的新版本），不能导入工作区的旧副本。
+    # 曾经这里写的是 sys.path.insert(0, str(BASE))，BASE 是工作区，
+    # 于是拿到 D:\Project\Test\cc_fetch.py 那份还在按扁平结构读凭据的老文件，
+    # 每跑一次就 KeyError: 'host'——而 skill 里的新版其实是对的。
+    # 判据：脚本目录优先于工作区目录。
     try:
         import cc_fetch
 
@@ -75,7 +88,9 @@ def check_cc_data() -> dict[str, int]:
             warn("CookieCloud 内容", f"只有 {list(doms)}，扩展可能还没同步")
         return doms
     except Exception as exc:
-        line("CookieCloud 取数", False, f"{type(exc).__name__}: {str(exc)[:60]}")
+        # 解密失败 / 404 都是常见状态，别让整份体检崩在半路
+        msg = str(exc).replace("\n", " ")
+        line("CookieCloud 取数", False, f"{type(exc).__name__}: {msg[:80]}")
         return {}
 
 

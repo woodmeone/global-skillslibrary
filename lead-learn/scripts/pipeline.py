@@ -210,8 +210,19 @@ def fetch_subtitle(video: Path, bvid: str) -> Path | None:
     return dest
 
 
-BILI_COOKIES = BASE / ".favorites-out" / "bilibili-cookies.txt"
-CC_CONF = BASE / ".favorites-out" / "cookiecloud.json"
+# 下面两行删掉了。它们原本是：
+#   BILI_COOKIES = BASE / ".favorites-out" / "bilibili-cookies.txt"
+#   CC_CONF      = BASE / ".favorites-out" / "cookiecloud.json"
+# 而第 43 行已经从 paths 导入了这两个同名值（paths.BILI_COOKIES_TXT / paths.CC_CONF，
+# 同样是 OUT / ... 算出来的）。再按 BASE 拼一遍属于第二真相源：
+# paths.OUT 一旦改名，这里会静默失配，且谁也想不到去这里查。
+#
+# 曾经的注解说「已修，现在沿用导入值」，但代码其实没动——注释描述了一个不存在
+# 的修复，比没注释更危险。现在真的删了。
+#
+# 同理，拉 cookie 要调 **skill 自己**的 cc_fetch.py，不是工作区里的副本。
+# 工作区那份是旧分支的快照，还在按扁平结构读凭据，一跑就 KeyError: 'host'。
+CC_FETCH = Path(__file__).resolve().parent / "cc_fetch.py"
 
 
 def refresh_cookies_from_cloud() -> bool:
@@ -233,12 +244,17 @@ def refresh_cookies_from_cloud() -> bool:
 
     try:
         r = subprocess.run(
-            [sys.executable, str(BASE / "cc_fetch.py"), "export", "bilibili"],
+            [sys.executable, str(CC_FETCH), "export", "bilibili"],
             capture_output=True, text=True, timeout=120,
             encoding="utf-8", errors="replace",
         )
         if r.returncode != 0:
             log(f"  CookieCloud 无可用数据，回退本地")
+            if r.stderr.strip():
+                # 凭据问题（占位值没填 / 密码与扩展不一致）会在这里说清楚原因，
+                # 不给看 stderr 的话只剩「回退本地」，排查得从头猜。
+                for ln in r.stderr.strip().splitlines()[:6]:
+                    log(f"    {ln}")
             return False
 
         # 比本地还旧就别用
@@ -254,7 +270,7 @@ def refresh_cookies_from_cloud() -> bool:
 
         log("  ✓ CookieCloud 取到 bilibili cookie")
         subprocess.run(
-            [sys.executable, str(BASE / "cc_fetch.py"), "export", "douyin"],
+            [sys.executable, str(CC_FETCH), "export", "douyin"],
             capture_output=True, text=True, timeout=120,
             encoding="utf-8", errors="replace",
         )

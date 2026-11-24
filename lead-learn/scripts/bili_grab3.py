@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import asyncio
 import json
-import os
 import sys
 from pathlib import Path
 
@@ -29,6 +28,52 @@ from paths import (  # noqa: E402
 
 def log(m: str) -> None:
     print(m, flush=True)
+
+
+def check_uid_match() -> list[str]:
+    """核对「cookie 里是谁」与「配置要抓谁」是否同一个账号。
+
+    两层，各有出处，不重复实现：
+
+      1. 配置层：cc_profile 与 bili_uid_by_profile 是否自洽
+         → 直接复用 cc_config.check_bili_uid_binding()，那边是唯一出处
+      2. 运行时层：导出的 cookie 里 DedeUserID 与 BILI_UID 是否一致
+         → 只有这里能做（需要读 cookie），用的是已导出的 json，不发请求
+
+    返回警告列表；全一致时为空。
+    """
+    out: list[str] = []
+
+    # 第一层：配置自洽（唯一出处是 cc_config）
+    try:
+        import cc_config
+        out.extend(cc_config.check_bili_uid_binding())
+    except Exception:
+        pass
+
+    # 第二层：实际 cookie
+    if not COOKIE_JSON.exists():
+        return out
+    try:
+        cks = json.loads(COOKIE_JSON.read_text(encoding="utf-8-sig"))
+    except Exception:
+        return out
+    ids = {str(c.get("value") or "").strip()
+           for c in cks if c.get("name") == "DedeUserID"}
+    ids.discard("")
+    if not ids:
+        out.append("cookie 里没有 DedeUserID —— 大概是未登录态")
+        return out
+    if not UID:
+        # 配置层已经报过「没配 BILI_UID」，这里不再重复
+        return out
+    if UID not in ids:
+        out.append(
+            f"cookie 属于 UID {sorted(ids)}，但配置要抓的是 {UID}。\n"
+            f"      这不是同一个人：抓回来的会是别人的收藏夹。\n"
+            f"      怎么办：让 cc_profile 与 bili_uid_by_profile 指向同一账号。"
+        )
+    return out
 
 
 async def fetch_json(page, url: str) -> dict:
@@ -55,6 +100,13 @@ async def main(limit: int = FAV_LIMIT) -> int:
         log(f"✗ 缺 {COOKIE_JSON}")
         log("  先跑：python cc_fetch.py export bilibili")
         return 2
+
+    # ⚠ 抓之前先核对「cookie 是哪个人」与「UID 要抓谁」。
+    # 两者都是合法值时，配错了全程不报错，只是收藏夹悄悄换了个人。
+    # 实测：两份 cookie 的 DedeUserID 完全不同号，而配置里写的还是原来那份的。
+    _uid_warn = check_uid_match()
+    for w in _uid_warn:
+        log(f"  ⚠ {w}")
 
     cookies = json.loads(COOKIE_JSON.read_text(encoding="utf-8-sig"))
     if not any(c.get("name") == "SESSDATA" for c in cookies):
